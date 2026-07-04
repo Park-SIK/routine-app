@@ -33,38 +33,32 @@
     padding-bottom: 84px;
   }
   button{ font-family:inherit; }
+  input, textarea{ font-family:inherit; }
 
-  /* ---- Top bar ---- */
   .topbar{
     padding: 18px 20px 8px;
-    font-size: 17px;
-    font-weight:700;
-  }
-
-  /* ---- Tabs (bottom nav) ---- */
-  .tabbar{
-    position:fixed;
-    bottom:0; left:0; right:0;
-    max-width:480px;
-    margin:0 auto;
-    background:var(--bg-elevated);
-    border-top:1px solid var(--line);
     display:flex;
-    padding: 6px 0 max(6px, env(safe-area-inset-bottom));
-    z-index: 100;
+    align-items:center;
+    justify-content:space-between;
+  }
+  .topbar-title{ font-size: 17px; font-weight:700; }
+  .topbar-actions{ display:flex; gap:8px; }
+  .topbar-btn{
+    background:var(--bg-elevated); border:1px solid var(--line); color:var(--text);
+    border-radius:20px; padding:7px 14px; font-size:13px; font-weight:600;
+  }
+  .topbar-btn.primary{ background:var(--amber); color:#1a1200; border:none; }
+  .topbar-btn.active{ border-color:var(--amber); color:var(--amber); }
+
+  .tabbar{
+    position:fixed; bottom:0; left:0; right:0; max-width:480px; margin:0 auto;
+    background:var(--bg-elevated); border-top:1px solid var(--line);
+    display:flex; padding: 6px 0 max(6px, env(safe-area-inset-bottom)); z-index: 100;
   }
   .tab-btn{
-    flex:1;
-    background:none;
-    border:none;
-    color:var(--text-dim);
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    gap:2px;
-    font-size:11px;
-    padding:8px 0 4px;
-    cursor:pointer;
+    flex:1; background:none; border:none; color:var(--text-dim);
+    display:flex; flex-direction:column; align-items:center; gap:2px;
+    font-size:11px; padding:8px 0 4px;
   }
   .tab-btn .icon{ font-size:20px; }
   .tab-btn.active{ color:var(--amber); }
@@ -72,71 +66,46 @@
   .page{ display:none; padding: 8px 20px 20px; }
   .page.active{ display:block; }
 
-  /* ---- Section titles ---- */
   .section-title{
-    font-size: 13px;
-    color: var(--text-dim);
-    font-weight:600;
-    letter-spacing:0.04em;
-    margin: 20px 4px 12px;
-    text-transform: uppercase;
+    font-size: 13px; color: var(--text-dim); font-weight:600;
+    letter-spacing:0.04em; margin: 20px 4px 12px; text-transform: uppercase;
   }
   .section-title:first-child{ margin-top:4px; }
 
   /* ---- Weather card ---- */
   .weather-card{
     background: linear-gradient(135deg, rgba(255,176,32,0.12), var(--bg-elevated));
-    border: 1px solid var(--line);
-    border-radius: 16px;
-    padding: 18px 20px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    margin-bottom: 8px;
+    border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px;
+    display:flex; align-items:center; justify-content:space-between; margin-bottom: 8px;
   }
   .weather-temp{ font-size: 28px; font-weight:700; }
   .weather-sub{ font-size: 12px; color:var(--text-dim); margin-top:4px; }
   .weather-icon{ font-size: 36px; }
+  .weather-hint{ font-size:11px; color:var(--text-dim); text-align:right; margin: 4px 4px 0; }
 
   /* ---- News cards ---- */
   .news-list{ display:flex; flex-direction:column; gap:14px; }
   .news-card{
-    background: var(--bg-elevated);
-    border:1px solid var(--line);
-    border-radius: 14px;
-    overflow:hidden;
-    display:block;
-    text-decoration:none;
-    color:inherit;
+    background: var(--bg-elevated); border:1px solid var(--line); border-radius: 14px;
+    overflow:hidden; display:block; text-decoration:none; color:inherit;
   }
-  .news-img{
-    width:100%; height:160px;
-    object-fit:cover;
-    background:#000;
-    display:block;
-  }
+  .news-img{ width:100%; height:160px; object-fit:cover; background:#000; display:block; }
   .news-img.hidden{ display:none; }
   .news-body{ padding: 12px 14px; }
+  .news-cat{
+    display:inline-block; background:var(--amber-dim); color:var(--amber);
+    font-size:11px; font-weight:700; border-radius:6px; padding:2px 8px; margin-bottom:6px;
+  }
   .news-title{ font-size:15px; font-weight:600; line-height:1.4; margin-bottom:6px; }
   .news-meta{ font-size:12px; color:var(--text-dim); }
 
   .more-btn{
-    width:100%;
-    margin-top:14px;
-    background:var(--bg-elevated);
-    border:1px solid var(--line);
-    color:var(--text);
-    border-radius:10px;
-    padding:12px 0;
-    font-size:14px;
-    font-weight:600;
+    width:100%; margin-top:14px; background:var(--bg-elevated); border:1px solid var(--line);
+    color:var(--text); border-radius:10px; padding:12px 0; font-size:14px; font-weight:600;
   }
 
   /* ---- Calendar grid ---- */
-  .cal-header{
-    display:flex; align-items:center; justify-content:space-between;
-    margin: 4px 0 14px;
-  }
+  .cal-header{ display:flex; align-items:center; justify-content:space-between; margin: 4px 0 14px; }
   .cal-nav-btn{
     background:var(--bg-elevated); border:1px solid var(--line); color:var(--text);
     width:36px; height:36px; border-radius:10px; font-size:18px;
@@ -148,13 +117,9 @@
   }
   .cal-wd.sun{ color:var(--red); }
   .cal-wd.sat{ color:#6ba3ff; }
-  .cal-grid{
-    display:grid; grid-template-columns: repeat(7, 1fr);
-    gap:4px; margin-bottom:8px;
-  }
+  .cal-grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:4px; margin-bottom:8px; }
   .cal-cell{
-    aspect-ratio: 1;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    aspect-ratio: 1; display:flex; flex-direction:column; align-items:center; justify-content:center;
     border-radius:10px; font-size:13px; position:relative;
     background: transparent; border:1px solid transparent; color:var(--text);
   }
@@ -163,44 +128,18 @@
   .cal-cell.sat{ color:#6ba3ff; }
   .cal-cell.today{ background: var(--amber); color:#1a1200; font-weight:700; }
   .cal-cell.selected:not(.today){ border-color: var(--amber); }
-  .cal-cell .dot{
-    width:5px; height:5px; border-radius:50%; background: var(--amber);
-    position:absolute; bottom:5px;
-  }
+  .cal-cell .dot{ width:5px; height:5px; border-radius:50%; background: var(--amber); position:absolute; bottom:5px; }
   .cal-cell.today .dot{ background:#1a1200; }
-  .cal-holiday-name{
-    font-size:10px; color:var(--text-dim); text-align:center; margin:-6px 0 10px;
-    grid-column: 1 / -1;
-  }
   .selected-event-item{
     background: var(--bg-elevated); border:1px solid var(--line); border-radius:12px;
     padding:12px 14px; margin-bottom:8px; font-size:14px;
+    display:flex; align-items:center; justify-content:space-between; gap:10px;
   }
   .selected-event-item .t{ font-weight:600; }
   .selected-event-item .tm{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .selected-event-item .actions{ display:flex; gap:6px; flex-shrink:0; }
 
-  .event-item{
-    background: var(--bg-elevated);
-    border:1px solid var(--line);
-    border-radius: 14px;
-    padding: 14px 16px;
-    margin-bottom:10px;
-    display:flex;
-    gap:14px;
-    align-items:center;
-  }
-  .event-date{
-    flex-shrink:0;
-    width:48px;
-    text-align:center;
-  }
-  .event-date .d{ font-size:20px; font-weight:700; color:var(--amber); }
-  .event-date .w{ font-size:11px; color:var(--text-dim); }
-  .event-info{ flex:1; }
-  .event-title{ font-size:15px; font-weight:600; }
-  .event-time{ font-size:12px; color:var(--text-dim); margin-top:2px; }
-
-  /* ---- Routine (기존 스타일 재사용) ---- */
+  /* ---- Routine ---- */
   .gauge-wrap{ position:relative; width:130px; height:130px; margin: 8px auto 14px; }
   .gauge-wrap svg{ transform: rotate(-90deg); }
   .gauge-bg{ fill:none; stroke: var(--line); stroke-width: 10; }
@@ -226,6 +165,10 @@
   .routine-item.done .checkbox svg{ opacity:1; }
   .routine-name{ flex:1; font-size:16px; font-weight:500; }
   .routine-item.done .routine-name{ color: var(--text-dim); text-decoration: line-through; }
+  .routine-del-btn{
+    flex-shrink:0; background:none; border:1px solid var(--red); color:var(--red);
+    border-radius:8px; padding:6px 10px; font-size:12px; font-weight:600;
+  }
 
   .inactive-toggle{
     display:flex; align-items:center; justify-content:center; gap:6px; width:100%;
@@ -241,13 +184,9 @@
   }
   .inactive-dot{ width:8px;height:8px;border-radius:50%; background: var(--text-dim); flex-shrink:0; }
 
-  /* ---- Empty state ---- */
-  .empty-box{
-    text-align:center; padding: 40px 20px; color: var(--text-dim); font-size:14px;
-  }
+  .empty-box{ text-align:center; padding: 40px 20px; color: var(--text-dim); font-size:14px; }
   .empty-box .big{ font-size:32px; margin-bottom:10px; }
 
-  /* ---- Loading / error ---- */
   .state-box{ text-align:center; padding: 50px 20px; color: var(--text-dim); font-size:14px; }
   .spinner{
     width:26px;height:26px; border:3px solid var(--line); border-top-color: var(--amber);
@@ -260,42 +199,6 @@
   }
   .hidden{ display:none !important; }
 
-  /* ---- Management (관리) tab ---- */
-  .subtab-bar{ display:flex; gap:8px; margin-bottom:16px; }
-  .subtab-btn{
-    flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text-dim);
-    border-radius:10px; padding:10px 0; font-size:14px; font-weight:600;
-  }
-  .subtab-btn.active{ color:var(--amber); border-color:var(--amber); }
-  .subpage{ display:none; }
-  .subpage.active{ display:block; }
-
-  .form-row{ display:flex; gap:8px; margin-bottom: 16px; }
-  .form-row input{
-    flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text);
-    border-radius:10px; padding:12px 14px; font-size:14px;
-  }
-  .form-row input::placeholder{ color:var(--text-dim); }
-  .btn-primary{
-    background:var(--amber); color:#1a1200; border:none; border-radius:10px;
-    padding:0 18px; font-size:14px; font-weight:700;
-  }
-
-  .manage-item{
-    display:flex; align-items:center; justify-content:space-between;
-    background:var(--bg-elevated); border:1px solid var(--line); border-radius:12px;
-    padding:14px 16px; margin-bottom:8px;
-  }
-  .manage-item .name{ font-size:15px; }
-  .btn-delete{
-    background:none; border:1px solid var(--red); color:var(--red);
-    border-radius:8px; padding:6px 12px; font-size:12px; font-weight:600;
-  }
-  .btn-edit{
-    background:none; border:1px solid var(--text-dim); color:var(--text-dim);
-    border-radius:8px; padding:6px 12px; font-size:12px; font-weight:600; margin-right:6px;
-  }
-
   .history-group{ margin-bottom: 18px; }
   .history-date{ font-size:13px; color:var(--text-dim); margin-bottom:8px; font-weight:600; }
   .history-chip{
@@ -303,56 +206,85 @@
     border-radius:20px; padding:6px 12px; font-size:12px; margin:0 6px 6px 0;
   }
 
+  /* ---- Bottom sheet ---- */
+  .sheet-overlay{
+    position:fixed; inset:0; background:rgba(0,0,0,0.55);
+    opacity:0; pointer-events:none; transition:opacity 0.25s; z-index:300;
+  }
+  .sheet-overlay.open{ opacity:1; pointer-events:auto; }
+  .sheet{
+    position:fixed; left:0; right:0; bottom:0; max-width:480px; margin:0 auto;
+    background:var(--bg-elevated); border-radius:20px 20px 0 0;
+    padding: 10px 20px calc(24px + env(safe-area-inset-bottom));
+    transform: translateY(100%); transition: transform 0.28s cubic-bezier(.32,.72,0,1);
+    z-index:301; max-height:80vh; overflow-y:auto;
+  }
+  .sheet.open{ transform: translateY(0); }
+  .sheet-handle{ width:36px; height:4px; background:var(--line); border-radius:2px; margin:0 auto 16px; }
+  .sheet h3{ margin:0 0 16px; font-size:17px; }
+  .sheet-input{
+    width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text);
+    border-radius:10px; padding:12px 14px; font-size:14px; margin-bottom:10px;
+  }
+  .sheet-row{ display:flex; gap:8px; }
+  .sheet-row .sheet-input{ flex:1; }
+  .sheet-btn{
+    width:100%; background:var(--amber); color:#1a1200; border:none;
+    border-radius:10px; padding:13px 0; font-size:15px; font-weight:700; margin-top:6px;
+  }
+  .sheet-btn.secondary{ background:var(--line); color:var(--text); margin-top:8px; }
+  .sheet-btn.danger{ background:none; border:1px solid var(--red); color:var(--red); margin-top:8px; }
+
+  .hourly-row{
+    display:flex; align-items:center; justify-content:space-between;
+    padding:10px 4px; border-bottom:1px solid var(--line); font-size:14px;
+  }
+  .hourly-row:last-child{ border-bottom:none; }
+  .hourly-time{ color:var(--text-dim); width:56px; }
+  .hourly-temp{ font-weight:700; width:48px; text-align:center; }
+  .hourly-sky{ color:var(--text-dim); flex:1; text-align:center; }
+  .hourly-pop{ color:var(--amber); width:48px; text-align:right; }
+
   .toast{
     position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
     background: var(--amber); color:#1a1200; padding:10px 20px; border-radius:20px;
-    font-size:13px; font-weight:600; z-index:200; opacity:0; transition:opacity 0.3s;
+    font-size:13px; font-weight:600; z-index:400; opacity:0; transition:opacity 0.3s;
     pointer-events:none; white-space:nowrap;
   }
   .toast.show{ opacity:1; }
-
-  .event-edit-form{
-    background:var(--bg-elevated); border:1px solid var(--amber); border-radius:12px;
-    padding:14px; margin-top:8px; display:none;
-  }
-  .event-edit-form.open{ display:block; }
-  .event-edit-form input{
-    width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text);
-    border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:8px;
-  }
-  .event-edit-form .row-btns{ display:flex; gap:8px; }
-  .event-edit-form .row-btns button{
-    flex:1; border-radius:8px; padding:10px 0; font-size:13px; font-weight:600; border:none;
-  }
 </style>
 </head>
 <body>
 
   <!-- ============ 뉴스 탭 ============ -->
   <div class="page active" id="page-news">
-    <div class="topbar">오늘</div>
+    <div class="topbar"><div class="topbar-title">오늘</div></div>
 
-    <div id="weatherLoading" class="state-box" style="padding:24px 0;">
-      <div class="spinner"></div>날씨 불러오는 중...
-    </div>
-    <div id="weatherCard" class="weather-card hidden">
+    <div id="weatherLoading" class="state-box" style="padding:24px 0;"><div class="spinner"></div>날씨 불러오는 중...</div>
+    <div id="weatherCard" class="weather-card hidden" onclick="openWeatherDetail()">
       <div>
         <div class="weather-temp" id="wTemp">-</div>
         <div class="weather-sub" id="wSub">-</div>
       </div>
       <div class="weather-icon" id="wIcon">☁️</div>
     </div>
+    <div class="weather-hint hidden" id="weatherHint">탭하면 시간대별 날씨 →</div>
 
     <div class="section-title">오늘의 뉴스</div>
     <div id="newsLoading" class="state-box"><div class="spinner"></div>뉴스 불러오는 중...</div>
     <div id="newsError" class="state-box hidden">뉴스를 불러오지 못했어요.<br><button class="retry-btn" onclick="loadNews()">다시 시도</button></div>
     <div id="newsList" class="news-list hidden"></div>
-    <button id="newsMoreBtn" class="more-btn hidden" onclick="showMoreNews()">더보기</button>
+    <button id="newsMoreBtn" class="more-btn hidden" onclick="toggleNewsExpand()">더보기</button>
   </div>
 
   <!-- ============ 일정 탭 ============ -->
   <div class="page" id="page-calendar">
-    <div class="topbar">일정</div>
+    <div class="topbar">
+      <div class="topbar-title">일정</div>
+      <div class="topbar-actions">
+        <button class="topbar-btn primary" onclick="openAddEventSheet()">+ 추가</button>
+      </div>
+    </div>
 
     <div class="cal-header">
       <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
@@ -367,20 +299,22 @@
         <div class="cal-wd">수</div><div class="cal-wd">목</div><div class="cal-wd">금</div><div class="cal-wd sat">토</div>
       </div>
       <div class="cal-grid" id="calGrid"></div>
-
       <div class="section-title">선택한 날의 일정</div>
       <div id="selectedDayEvents"></div>
     </div>
     <div id="calError" class="state-box hidden">일정을 불러오지 못했어요.<br><button class="retry-btn" onclick="loadCalendar()">다시 시도</button></div>
-
-    <div class="section-title">다가오는 일정</div>
-    <div id="calEmpty" class="empty-box hidden"><div class="big">🗓️</div>앞으로 14일 안에 예정된 일정이 없어요.</div>
-    <div id="calList"></div>
   </div>
 
   <!-- ============ 루틴 탭 ============ -->
   <div class="page" id="page-routine">
-    <div class="topbar">루틴</div>
+    <div class="topbar">
+      <div class="topbar-title">루틴</div>
+      <div class="topbar-actions">
+        <button class="topbar-btn" id="historyBtn" onclick="openHistorySheet()">기록</button>
+        <button class="topbar-btn" id="editModeBtn" onclick="toggleEditMode()">편집</button>
+        <button class="topbar-btn primary" onclick="openAddRoutineSheet()">+ 추가</button>
+      </div>
+    </div>
     <div class="gauge-wrap">
       <svg width="130" height="130" viewBox="0 0 150 150">
         <circle class="gauge-bg" cx="75" cy="75" r="65"></circle>
@@ -396,8 +330,7 @@
     <div id="routineError" class="state-box hidden">루틴을 불러오지 못했어요.<br><button class="retry-btn" onclick="loadRoutines()">다시 시도</button></div>
     <div id="routineContent" class="hidden">
       <div id="routineEmpty" class="empty-box hidden">
-        <div class="big">✅</div>
-        아직 루틴이 없어요.<br>관리탭에서 루틴을 추가해보세요!
+        <div class="big">✅</div>아직 루틴이 없어요.<br>"+추가"를 눌러 루틴을 만들어보세요!
       </div>
       <div class="list" id="activeList"></div>
       <button class="inactive-toggle" id="inactiveToggle" onclick="toggleInactive()">
@@ -410,63 +343,26 @@
 
   <!-- ============ 관리 탭 ============ -->
   <div class="page" id="page-manage">
-    <div class="topbar">관리</div>
-    <div class="subtab-bar">
-      <button class="subtab-btn active" id="subtab-routine" onclick="switchSubtab('routine')">루틴관리</button>
-      <button class="subtab-btn" id="subtab-calendar" onclick="switchSubtab('calendar')">일정관리</button>
-    </div>
-
-    <!-- 루틴관리 -->
-    <div class="subpage active" id="sub-routine">
-      <div class="section-title">루틴 추가</div>
-      <div class="form-row">
-        <input type="text" id="newRoutineInput" placeholder="새 루틴 이름 (예: 물 2L)">
-        <button class="btn-primary" onclick="addRoutine()">추가</button>
-      </div>
-
-      <div class="section-title">현재 루틴</div>
-      <div id="manageRoutineLoading" class="state-box" style="padding:20px 0;"><div class="spinner"></div>불러오는 중...</div>
-      <div id="manageRoutineList"></div>
-
-      <div class="section-title">완료 기록</div>
-      <div id="historyLoading" class="state-box" style="padding:20px 0;"><div class="spinner"></div>불러오는 중...</div>
-      <div id="historyEmpty" class="empty-box hidden">아직 완료 기록이 없어요.</div>
-      <div id="historyList"></div>
-    </div>
-
-    <!-- 일정관리 -->
-    <div class="subpage" id="sub-calendar">
-      <div class="section-title">일정 추가</div>
-      <div style="margin-bottom:20px;">
-        <input type="text" id="newEventTitle" placeholder="일정 제목" style="width:100%; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 14px; font-size:14px; margin-bottom:8px;">
-        <div style="display:flex; gap:8px; margin-bottom:8px;">
-          <input type="date" id="newEventDate" style="flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 10px; font-size:14px;">
-          <input type="time" id="newEventStart" style="flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 10px; font-size:14px;">
-          <input type="time" id="newEventEnd" style="flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 10px; font-size:14px;">
-        </div>
-        <button class="btn-primary" style="width:100%; padding:12px 0;" onclick="addEvent()">일정 추가</button>
-      </div>
-
-      <div class="section-title">다가오는 일정</div>
-      <div id="manageCalLoading" class="state-box" style="padding:20px 0;"><div class="spinner"></div>불러오는 중...</div>
-      <div id="manageCalList"></div>
+    <div class="topbar"><div class="topbar-title">관리</div></div>
+    <div class="empty-box">
+      <div class="big">🛠️</div>
+      준비 중입니다.<br>곧 새로운 기능이 추가될 예정이에요.
     </div>
   </div>
 
   <!-- ============ 하단 탭바 ============ -->
   <div class="tabbar">
-    <button class="tab-btn active" id="tabbtn-news" onclick="switchTab('news')">
-      <span class="icon">📰</span><span>뉴스</span>
-    </button>
-    <button class="tab-btn" id="tabbtn-calendar" onclick="switchTab('calendar')">
-      <span class="icon">🗓️</span><span>일정</span>
-    </button>
-    <button class="tab-btn" id="tabbtn-routine" onclick="switchTab('routine')">
-      <span class="icon">✅</span><span>루틴</span>
-    </button>
-    <button class="tab-btn" id="tabbtn-manage" onclick="switchTab('manage')">
-      <span class="icon">⚙️</span><span>관리</span>
-    </button>
+    <button class="tab-btn active" id="tabbtn-news" onclick="switchTab('news')"><span class="icon">📰</span><span>뉴스</span></button>
+    <button class="tab-btn" id="tabbtn-calendar" onclick="switchTab('calendar')"><span class="icon">🗓️</span><span>일정</span></button>
+    <button class="tab-btn" id="tabbtn-routine" onclick="switchTab('routine')"><span class="icon">✅</span><span>루틴</span></button>
+    <button class="tab-btn" id="tabbtn-manage" onclick="switchTab('manage')"><span class="icon">⚙️</span><span>관리</span></button>
+  </div>
+
+  <!-- ============ 바텀시트 ============ -->
+  <div class="sheet-overlay" id="sheetOverlay" onclick="closeSheet()"></div>
+  <div class="sheet" id="sheet">
+    <div class="sheet-handle"></div>
+    <div id="sheetContent"></div>
   </div>
 
   <div class="toast" id="toast"></div>
@@ -503,9 +399,20 @@
     setTimeout(()=> t.classList.remove('show'), 2000);
   }
 
+  /* ================== 바텀시트 공통 ================== */
+  function openSheet(html){
+    document.getElementById('sheetContent').innerHTML = html;
+    document.getElementById('sheetOverlay').classList.add('open');
+    document.getElementById('sheet').classList.add('open');
+  }
+  function closeSheet(){
+    document.getElementById('sheetOverlay').classList.remove('open');
+    document.getElementById('sheet').classList.remove('open');
+  }
+
   /* ================== 탭 전환 ================== */
   let currentTab = 'news';
-  const tabLoaded = { news:false, calendar:false, routine:false, manage:false };
+  const tabLoaded = { news:false, calendar:false, routine:false, manage:true };
 
   function switchTab(name){
     document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
@@ -519,34 +426,49 @@
       if(name === 'news'){ loadWeather(); loadNews(); }
       if(name === 'calendar'){ loadCalendar(); }
       if(name === 'routine'){ loadRoutines(); }
-      if(name === 'manage'){ loadManageRoutines(); loadHistory(); loadManageCalendar(); }
     }
   }
 
-  let currentSubtab = 'routine';
-  function switchSubtab(name){
-    document.querySelectorAll('.subpage').forEach(p => p.classList.remove('active'));
-    document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
-    document.getElementById('sub-' + name).classList.add('active');
-    document.getElementById('subtab-' + name).classList.add('active');
-    currentSubtab = name;
-  }
-
   /* ================== 날씨 ================== */
+  let weatherData = null;
+
   async function loadWeather(){
     try{
       const res = await fetch(API.weather);
       const data = await res.json();
       const w = Array.isArray(data) ? data[0] : data;
+      weatherData = w;
       document.getElementById('wTemp').textContent = `${w.minTemp}° / ${w.maxTemp}°`;
       document.getElementById('wSub').textContent = `${w.sky} · 강수확률 ${w.maxPop}%`;
       const iconMap = { '맑음':'☀️', '구름많음':'⛅', '흐림':'☁️' };
       document.getElementById('wIcon').textContent = iconMap[w.sky] || '🌤️';
       hide('weatherLoading');
       show('weatherCard');
+      show('weatherHint');
     }catch(e){
       hide('weatherLoading');
     }
+  }
+
+  function openWeatherDetail(){
+    if(!weatherData || !weatherData.hourly){ toast('날씨 상세 정보가 없어요'); return; }
+    const skyIcon = { '맑음':'☀️', '구름많음':'⛅', '흐림':'☁️' };
+    const rows = weatherData.hourly.map(h => {
+      const hh = h.time ? h.time.substring(0,2) + '시' : '-';
+      return `
+        <div class="hourly-row">
+          <div class="hourly-time">${hh}</div>
+          <div class="hourly-temp">${h.temp}°</div>
+          <div class="hourly-sky">${skyIcon[h.sky] || ''} ${h.sky || ''}</div>
+          <div class="hourly-pop">💧${h.pop}%</div>
+        </div>
+      `;
+    }).join('');
+    openSheet(`
+      <h3>오늘 시간대별 날씨</h3>
+      <div style="max-height:50vh; overflow-y:auto;">${rows}</div>
+      <button class="sheet-btn secondary" onclick="closeSheet()">닫기</button>
+    `);
   }
 
   /* ================== 뉴스 ================== */
@@ -587,9 +509,11 @@
         ? `<img class="news-img" src="${escapeHtml(article.urlToImage)}" onerror="this.classList.add('hidden')">`
         : '';
       const dateStr = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('ko-KR', {month:'numeric', day:'numeric'}) : '';
+      const catBadge = article.category ? `<div class="news-cat">${escapeHtml(article.category)}</div>` : '';
       el.innerHTML = `
         ${img}
         <div class="news-body">
+          ${catBadge}
           <div class="news-title">${escapeHtml(article.title)}</div>
           <div class="news-meta">${escapeHtml(article.source?.name || '')} · ${dateStr}</div>
         </div>
@@ -605,16 +529,13 @@
       hide('newsMoreBtn');
     }
   }
-  function showMoreNews(){
-    newsExpanded = !newsExpanded;
-    renderNews();
-  }
+  function toggleNewsExpand(){ newsExpanded = !newsExpanded; renderNews(); }
 
-  /* ================== 일정 조회 (달력 뷰) ================== */
+  /* ================== 일정 (달력) ================== */
   let calendarEvents = [];
   let eventsByDate = {};
   let holidayMap = {};
-  let calViewYear, calViewMonth; // calViewMonth: 0-indexed
+  let calViewYear, calViewMonth;
   let selectedDateStr = null;
 
   function dateKey(d){
@@ -622,9 +543,8 @@
   }
 
   async function loadCalendar(){
-    hide('calError'); hide('calEmpty'); hide('calGridWrap');
+    hide('calError'); hide('calGridWrap');
     show('calGridLoading');
-    document.getElementById('calList').innerHTML = '';
 
     const today = new Date();
     calViewYear = today.getFullYear();
@@ -660,16 +580,13 @@
             const key = `${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}`;
             holidayMap[key] = h.dateName;
           });
-        }catch(e){ /* 공휴일 실패해도 달력은 그대로 표시 */ }
+        }catch(e){}
       }
 
       hide('calGridLoading');
       show('calGridWrap');
       renderCalGrid();
       renderSelectedDayEvents();
-
-      if(calendarEvents.length === 0){ show('calEmpty'); }
-      else{ renderCalendarList(calendarEvents, document.getElementById('calList'), false); }
     }catch(e){
       hide('calGridLoading');
       show('calError');
@@ -684,17 +601,14 @@
   }
 
   function renderCalGrid(){
-    const labelEl = document.getElementById('calMonthLabel');
-    labelEl.textContent = `${calViewYear}년 ${calViewMonth+1}월`;
-
+    document.getElementById('calMonthLabel').textContent = `${calViewYear}년 ${calViewMonth+1}월`;
     const gridEl = document.getElementById('calGrid');
     gridEl.innerHTML = '';
 
     const firstDay = new Date(calViewYear, calViewMonth, 1);
     const startWeekday = firstDay.getDay();
     const daysInMonth = new Date(calViewYear, calViewMonth+1, 0).getDate();
-    const today = new Date();
-    const todayKey = dateKey(today);
+    const todayKey = dateKey(new Date());
 
     for(let i=0; i<startWeekday; i++){
       const empty = document.createElement('div');
@@ -715,14 +629,10 @@
       if(key === selectedDateStr) cls += ' selected';
       cell.className = cls;
       cell.onclick = () => selectDay(key);
-
       const hasEvent = eventsByDate[key] && eventsByDate[key].length > 0;
       cell.innerHTML = `${day}${hasEvent ? '<div class="dot"></div>' : ''}`;
+      if(holidayMap[key]) cell.title = holidayMap[key];
       gridEl.appendChild(cell);
-
-      if(holidayMap[key]){
-        cell.title = holidayMap[key];
-      }
     }
   }
 
@@ -759,59 +669,122 @@
       const el = document.createElement('div');
       el.className = 'selected-event-item';
       el.innerHTML = `
-        <div class="t">${escapeHtml(ev.summary || '(제목 없음)')}</div>
-        <div class="tm">${timeStr}</div>
+        <div>
+          <div class="t">${escapeHtml(ev.summary || '(제목 없음)')}</div>
+          <div class="tm">${timeStr}</div>
+        </div>
+        <div class="actions">
+          <button class="routine-del-btn" style="border-color:var(--text-dim); color:var(--text-dim);" onclick="openEditEventSheet('${ev.id}')">수정</button>
+          <button class="routine-del-btn" onclick="confirmDeleteEvent('${ev.id}')">삭제</button>
+        </div>
       `;
       container.appendChild(el);
     });
   }
 
-  function renderCalendarList(events, container, editable){
-    container.innerHTML = '';
-    const days = ['일','월','화','수','목','금','토'];
-    events.forEach(ev => {
-      const start = ev.start?.dateTime || ev.start?.date;
-      const end = ev.end?.dateTime || ev.end?.date;
-      if(!start) return;
-      const d = new Date(start);
-      const wrap = document.createElement('div');
-      wrap.innerHTML = `
-        <div class="event-item">
-          <div class="event-date">
-            <div class="d">${d.getDate()}</div>
-            <div class="w">${days[d.getDay()]}</div>
-          </div>
-          <div class="event-info">
-            <div class="event-title">${escapeHtml(ev.summary || '(제목 없음)')}</div>
-            <div class="event-time">${d.toLocaleString('ko-KR', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
-          </div>
-          ${editable ? `
-          <div>
-            <button class="btn-edit" onclick="toggleEditForm('${ev.id}')">수정</button>
-            <button class="btn-delete" onclick="deleteEvent('${ev.id}')">삭제</button>
-          </div>` : ''}
-        </div>
-        ${editable ? `
-        <div class="event-edit-form" id="edit-${ev.id}">
-          <input type="text" id="editTitle-${ev.id}" value="${escapeHtml(ev.summary || '')}" placeholder="제목">
-          <input type="date" id="editDate-${ev.id}" value="${start.substring(0,10)}">
-          <div style="display:flex; gap:8px; margin-bottom:8px;">
-            <input type="time" id="editStart-${ev.id}" value="${start.substring(11,16)}">
-            <input type="time" id="editEnd-${ev.id}" value="${(end||start).substring(11,16)}">
-          </div>
-          <div class="row-btns">
-            <button style="background:var(--amber); color:#1a1200;" onclick="saveEvent('${ev.id}')">저장</button>
-            <button style="background:var(--line); color:var(--text);" onclick="toggleEditForm('${ev.id}')">취소</button>
-          </div>
-        </div>` : ''}
-      `;
-      container.appendChild(wrap);
-    });
+  /* ---- 일정 추가/수정/삭제 시트 ---- */
+  function openAddEventSheet(){
+    const defaultDate = selectedDateStr || dateKey(new Date());
+    openSheet(`
+      <h3>일정 추가</h3>
+      <input class="sheet-input" id="sh_title" placeholder="일정 제목">
+      <input class="sheet-input" id="sh_date" type="date" value="${defaultDate}">
+      <div class="sheet-row">
+        <input class="sheet-input" id="sh_start" type="time">
+        <input class="sheet-input" id="sh_end" type="time">
+      </div>
+      <button class="sheet-btn" onclick="submitAddEvent()">추가하기</button>
+      <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
+    `);
+  }
+
+  async function submitAddEvent(){
+    const title = document.getElementById('sh_title').value.trim();
+    const date = document.getElementById('sh_date').value;
+    const startT = document.getElementById('sh_start').value;
+    const endT = document.getElementById('sh_end').value;
+    if(!title || !date || !startT || !endT){ toast('모든 항목을 입력해주세요'); return; }
+    const startTime = `${date}T${startT}:00+09:00`;
+    const endTime = `${date}T${endT}:00+09:00`;
+    try{
+      const res = await fetch(API.calendarAdd, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ summary: title, startTime, endTime })
+      });
+      const data = await res.json();
+      toast(data.message || '일정을 추가했어요');
+      closeSheet();
+      tabLoaded.calendar = false;
+      loadCalendar();
+    }catch(e){ toast('추가에 실패했어요'); }
+  }
+
+  function openEditEventSheet(id){
+    const events = eventsByDate[selectedDateStr] || [];
+    const ev = events.find(e => e.id === id);
+    if(!ev) return;
+    const start = ev.start?.dateTime || ev.start?.date;
+    const end = ev.end?.dateTime || ev.end?.date || start;
+    openSheet(`
+      <h3>일정 수정</h3>
+      <input class="sheet-input" id="sh_title" value="${escapeHtml(ev.summary || '')}" placeholder="일정 제목">
+      <input class="sheet-input" id="sh_date" type="date" value="${start.substring(0,10)}">
+      <div class="sheet-row">
+        <input class="sheet-input" id="sh_start" type="time" value="${start.substring(11,16)}">
+        <input class="sheet-input" id="sh_end" type="time" value="${end.substring(11,16)}">
+      </div>
+      <button class="sheet-btn" onclick="submitEditEvent('${id}')">저장하기</button>
+      <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
+    `);
+  }
+
+  async function submitEditEvent(id){
+    const title = document.getElementById('sh_title').value.trim();
+    const date = document.getElementById('sh_date').value;
+    const startT = document.getElementById('sh_start').value;
+    const endT = document.getElementById('sh_end').value;
+    if(!title || !date || !startT || !endT){ toast('모든 항목을 입력해주세요'); return; }
+    const startTime = `${date}T${startT}:00+09:00`;
+    const endTime = `${date}T${endT}:00+09:00`;
+    try{
+      const res = await fetch(API.calendarUpdate, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ eventId: id, summary: title, startTime, endTime })
+      });
+      const data = await res.json();
+      toast(data.message || '수정했어요');
+      closeSheet();
+      tabLoaded.calendar = false;
+      loadCalendar();
+    }catch(e){ toast('수정에 실패했어요'); }
+  }
+
+  function confirmDeleteEvent(id){
+    openSheet(`
+      <h3>이 일정을 삭제할까요?</h3>
+      <button class="sheet-btn danger" onclick="submitDeleteEvent('${id}')">삭제하기</button>
+      <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
+    `);
+  }
+
+  async function submitDeleteEvent(id){
+    try{
+      const res = await fetch(API.calendarDelete, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ eventId: id })
+      });
+      const data = await res.json();
+      toast(data.message || '삭제했어요');
+      closeSheet();
+      tabLoaded.calendar = false;
+      loadCalendar();
+    }catch(e){ toast('삭제에 실패했어요'); }
   }
 
   /* ================== 루틴 ================== */
   let doneSet = new Set();
   let routines = [];
+  let editMode = false;
 
   async function loadRoutines(){
     hide('routineError'); hide('routineContent');
@@ -829,6 +802,13 @@
     }
   }
 
+  function toggleEditMode(){
+    editMode = !editMode;
+    document.getElementById('editModeBtn').classList.toggle('active', editMode);
+    document.getElementById('editModeBtn').textContent = editMode ? '완료' : '편집';
+    renderRoutines();
+  }
+
   function renderRoutines(){
     const active = routines.filter(r => r['활성여부'] === 'Y');
     const inactive = routines.filter(r => r['활성여부'] !== 'Y');
@@ -836,17 +816,18 @@
     const activeList = document.getElementById('activeList');
     activeList.innerHTML = '';
 
-    if(routines.length === 0){
-      show('routineEmpty');
-    }else{
-      hide('routineEmpty');
-    }
+    if(routines.length === 0){ show('routineEmpty'); } else { hide('routineEmpty'); }
 
     active.forEach(r => {
       const name = r['루틴명'];
       const item = document.createElement('div');
       item.className = 'routine-item' + (doneSet.has(name) ? ' done' : '');
-      item.onclick = () => toggleDone(name, item);
+      if(!editMode){
+        item.onclick = () => toggleDone(name, item);
+      }
+      const delBtn = editMode
+        ? `<button class="routine-del-btn" onclick="event.stopPropagation(); confirmDeleteRoutine('${escapeHtml(name)}')">삭제</button>`
+        : '';
       item.innerHTML = `
         <div class="checkbox">
           <svg viewBox="0 0 24 24" fill="none" stroke="#1a1200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
@@ -854,6 +835,7 @@
           </svg>
         </div>
         <div class="routine-name">${escapeHtml(name)}</div>
+        ${delBtn}
       `;
       activeList.appendChild(item);
     });
@@ -863,7 +845,10 @@
     inactive.forEach(r => {
       const el = document.createElement('div');
       el.className = 'inactive-item';
-      el.innerHTML = `<div class="inactive-dot"></div>${escapeHtml(r['루틴명'])}`;
+      const delBtn = editMode
+        ? `<button class="routine-del-btn" onclick="confirmDeleteRoutine('${escapeHtml(r['루틴명'])}')" style="margin-left:auto;">삭제</button>`
+        : '';
+      el.innerHTML = `<div class="inactive-dot"></div>${escapeHtml(r['루틴명'])}${delBtn}`;
       inactiveList.appendChild(el);
     });
     document.getElementById('inactiveLabel').textContent = `비활성 루틴 보기 (${inactive.length})`;
@@ -882,8 +867,7 @@
 
   function saveCheck(name){
     fetch(API.check, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ routineName: name })
     }).catch(err => console.error('체크 저장 실패:', err));
   }
@@ -902,39 +886,18 @@
     document.getElementById('inactiveToggle').classList.toggle('open');
   }
 
-  /* ================== 관리: 루틴 ================== */
-  async function loadManageRoutines(){
-    show('manageRoutineLoading');
-    document.getElementById('manageRoutineList').innerHTML = '';
-    try{
-      const res = await fetch(API.routines);
-      const data = await res.json();
-      const list = Array.isArray(data) ? data : [];
-      hide('manageRoutineLoading');
-      const container = document.getElementById('manageRoutineList');
-      if(list.length === 0){
-        container.innerHTML = '<div class="empty-box">등록된 루틴이 없어요.</div>';
-        return;
-      }
-      list.forEach(r => {
-        const el = document.createElement('div');
-        el.className = 'manage-item';
-        const statusLabel = r['활성여부'] === 'Y' ? '' : ' (비활성)';
-        el.innerHTML = `
-          <div class="name">${escapeHtml(r['루틴명'])}${statusLabel}</div>
-          <button class="btn-delete" onclick="deleteRoutine('${escapeHtml(r['루틴명'])}')">삭제</button>
-        `;
-        container.appendChild(el);
-      });
-    }catch(e){
-      hide('manageRoutineLoading');
-      document.getElementById('manageRoutineList').innerHTML = '<div class="empty-box">불러오지 못했어요.</div>';
-    }
+  /* ---- 루틴 추가/삭제 시트 ---- */
+  function openAddRoutineSheet(){
+    openSheet(`
+      <h3>루틴 추가</h3>
+      <input class="sheet-input" id="sh_routine_name" placeholder="루틴 이름 (예: 물 2L)">
+      <button class="sheet-btn" onclick="submitAddRoutine()">추가하기</button>
+      <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
+    `);
   }
 
-  async function addRoutine(){
-    const input = document.getElementById('newRoutineInput');
-    const name = input.value.trim();
+  async function submitAddRoutine(){
+    const name = document.getElementById('sh_routine_name').value.trim();
     if(!name){ toast('루틴 이름을 입력해주세요'); return; }
     try{
       const res = await fetch(API.routineAdd, {
@@ -943,13 +906,20 @@
       });
       const data = await res.json();
       toast(data.message || '추가했어요');
-      input.value = '';
-      loadManageRoutines();
-      tabLoaded.routine = false;
+      closeSheet();
+      loadRoutines();
     }catch(e){ toast('추가에 실패했어요'); }
   }
 
-  async function deleteRoutine(name){
+  function confirmDeleteRoutine(name){
+    openSheet(`
+      <h3>"${escapeHtml(name)}" 삭제할까요?</h3>
+      <button class="sheet-btn danger" onclick="submitDeleteRoutine('${escapeHtml(name)}')">삭제하기</button>
+      <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
+    `);
+  }
+
+  async function submitDeleteRoutine(name){
     try{
       const res = await fetch(API.routineDelete, {
         method:'POST', headers:{'Content-Type':'application/json'},
@@ -957,123 +927,41 @@
       });
       const data = await res.json();
       toast(data.message || '삭제했어요');
-      loadManageRoutines();
-      tabLoaded.routine = false;
+      closeSheet();
+      loadRoutines();
     }catch(e){ toast('삭제에 실패했어요'); }
   }
 
-  /* ================== 관리: 완료 기록 ================== */
-  async function loadHistory(){
-    show('historyLoading');
-    hide('historyEmpty');
-    document.getElementById('historyList').innerHTML = '';
+  /* ---- 완료 기록 시트 ---- */
+  async function openHistorySheet(){
+    openSheet(`<h3>완료 기록</h3><div id="sh_history_body"><div class="state-box" style="padding:20px 0;"><div class="spinner"></div>불러오는 중...</div></div>`);
     try{
       const res = await fetch(API.checkHistory);
       const data = await res.json();
       const list = (Array.isArray(data) ? data : []).filter(r => r['루틴명']);
-      hide('historyLoading');
-      if(list.length === 0){ show('historyEmpty'); return; }
-
+      const bodyEl = document.getElementById('sh_history_body');
+      if(!bodyEl) return;
+      if(list.length === 0){
+        bodyEl.innerHTML = `<div class="empty-box" style="padding:20px 0;">아직 완료 기록이 없어요.</div>`;
+        return;
+      }
       const grouped = {};
       list.forEach(r => {
         const date = r['날짜'] || '날짜 없음';
         if(!grouped[date]) grouped[date] = [];
         grouped[date].push(r['루틴명']);
       });
-
-      const container = document.getElementById('historyList');
+      let html = '<div style="max-height:55vh; overflow-y:auto;">';
       Object.keys(grouped).sort().reverse().forEach(date => {
-        const group = document.createElement('div');
-        group.className = 'history-group';
         const chips = grouped[date].map(name => `<span class="history-chip">${escapeHtml(name)}</span>`).join('');
-        group.innerHTML = `<div class="history-date">${escapeHtml(date)}</div>${chips}`;
-        container.appendChild(group);
+        html += `<div class="history-group"><div class="history-date">${escapeHtml(date)}</div>${chips}</div>`;
       });
+      html += '</div><button class="sheet-btn secondary" onclick="closeSheet()">닫기</button>';
+      bodyEl.parentElement.innerHTML = `<h3>완료 기록</h3>` + html;
     }catch(e){
-      hide('historyLoading');
-      document.getElementById('historyList').innerHTML = '<div class="empty-box">불러오지 못했어요.</div>';
+      const bodyEl = document.getElementById('sh_history_body');
+      if(bodyEl) bodyEl.innerHTML = `<div class="empty-box" style="padding:20px 0;">불러오지 못했어요.</div>`;
     }
-  }
-
-  /* ================== 관리: 일정 ================== */
-  async function loadManageCalendar(){
-    show('manageCalLoading');
-    document.getElementById('manageCalList').innerHTML = '';
-    try{
-      const res = await fetch(API.calendar);
-      const events = await res.json();
-      hide('manageCalLoading');
-      const container = document.getElementById('manageCalList');
-      if(!Array.isArray(events) || events.length === 0){
-        container.innerHTML = '<div class="empty-box">예정된 일정이 없어요.</div>';
-        return;
-      }
-      renderCalendarList(events, container, true);
-    }catch(e){
-      hide('manageCalLoading');
-      document.getElementById('manageCalList').innerHTML = '<div class="empty-box">불러오지 못했어요.</div>';
-    }
-  }
-
-  function toggleEditForm(id){
-    document.getElementById('edit-' + id).classList.toggle('open');
-  }
-
-  async function saveEvent(id){
-    const title = document.getElementById('editTitle-'+id).value.trim();
-    const date = document.getElementById('editDate-'+id).value;
-    const startT = document.getElementById('editStart-'+id).value;
-    const endT = document.getElementById('editEnd-'+id).value;
-    if(!title || !date || !startT || !endT){ toast('모든 항목을 입력해주세요'); return; }
-    const startTime = `${date}T${startT}:00+09:00`;
-    const endTime = `${date}T${endT}:00+09:00`;
-    try{
-      const res = await fetch(API.calendarUpdate, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ eventId: id, summary: title, startTime, endTime })
-      });
-      const data = await res.json();
-      toast(data.message || '수정했어요');
-      loadManageCalendar();
-      tabLoaded.calendar = false;
-    }catch(e){ toast('수정에 실패했어요'); }
-  }
-
-  async function deleteEvent(id){
-    try{
-      const res = await fetch(API.calendarDelete, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ eventId: id })
-      });
-      const data = await res.json();
-      toast(data.message || '삭제했어요');
-      loadManageCalendar();
-      tabLoaded.calendar = false;
-    }catch(e){ toast('삭제에 실패했어요'); }
-  }
-
-  async function addEvent(){
-    const title = document.getElementById('newEventTitle').value.trim();
-    const date = document.getElementById('newEventDate').value;
-    const startT = document.getElementById('newEventStart').value;
-    const endT = document.getElementById('newEventEnd').value;
-    if(!title || !date || !startT || !endT){ toast('모든 항목을 입력해주세요'); return; }
-    const startTime = `${date}T${startT}:00+09:00`;
-    const endTime = `${date}T${endT}:00+09:00`;
-    try{
-      const res = await fetch(API.calendarAdd, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ summary: title, startTime, endTime })
-      });
-      const data = await res.json();
-      toast(data.message || '일정을 추가했어요');
-      document.getElementById('newEventTitle').value = '';
-      document.getElementById('newEventDate').value = '';
-      document.getElementById('newEventStart').value = '';
-      document.getElementById('newEventEnd').value = '';
-      loadManageCalendar();
-      tabLoaded.calendar = false;
-    }catch(e){ toast('추가에 실패했어요'); }
   }
 
   /* ================== 초기 로딩 ================== */
