@@ -120,6 +120,14 @@
     <div class="result" id="result-calendar"></div>
   </div>
 
+  <!-- 카드 7: 날씨 조회 -->
+  <div class="card">
+    <h3>날씨 조회 (GET)</h3>
+    <input type="text" class="url-input" id="url-weather" value="https://adept-mastiff.pikapod.net/webhook/weather">
+    <button onclick="testGet('url-weather','result-weather')">날씨 요청 보내기</button>
+    <div class="result" id="result-weather"></div>
+  </div>
+
 <script>
   async function testPost(urlId, inputId, resultId, fieldName){
     const url = document.getElementById(urlId).value.trim();
