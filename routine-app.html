@@ -1,0 +1,378 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>루틴</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --bg: #121212;
+    --bg-elevated: #1c1c1c;
+    --amber: #FFB020;
+    --amber-dim: rgba(255,176,32,0.15);
+    --text: #F2F2F2;
+    --text-dim: #8a8a8a;
+    --line: #2a2a2a;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{
+    margin:0; padding:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Pretendard', -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  body{
+    min-height:100vh;
+    padding: 28px 20px 40px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+
+  /* ---- Header / Gauge ---- */
+  .header{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 8px 0 32px;
+  }
+  .gauge-wrap{
+    position:relative;
+    width:150px;
+    height:150px;
+    margin-bottom:14px;
+  }
+  .gauge-wrap svg{
+    transform: rotate(-90deg);
+  }
+  .gauge-bg{
+    fill:none;
+    stroke: var(--line);
+    stroke-width: 10;
+  }
+  .gauge-fg{
+    fill:none;
+    stroke: var(--amber);
+    stroke-width: 10;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1);
+  }
+  .gauge-center{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+  }
+  .gauge-count{
+    font-size: 34px;
+    font-weight:700;
+    letter-spacing:-0.02em;
+    color: var(--text);
+  }
+  .gauge-total{
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 2px;
+  }
+  .header-date{
+    font-size:13px;
+    color:var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+
+  /* ---- Section ---- */
+  .section-title{
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight:600;
+    letter-spacing:0.04em;
+    margin: 0 4px 12px;
+    text-transform: uppercase;
+  }
+
+  .list{
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    margin-bottom: 28px;
+  }
+
+  .routine-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    background: var(--bg-elevated);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 16px 16px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .routine-item.done{
+    border-color: var(--amber);
+    background: linear-gradient(0deg, var(--amber-dim), var(--amber-dim)), var(--bg-elevated);
+  }
+
+  .checkbox{
+    flex-shrink:0;
+    width:24px;
+    height:24px;
+    border-radius: 8px;
+    border: 2px solid var(--text-dim);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition: all 0.2s;
+  }
+  .routine-item.done .checkbox{
+    border-color: var(--amber);
+    background: var(--amber);
+  }
+  .checkbox svg{
+    width:14px; height:14px;
+    opacity:0;
+    transition: opacity 0.15s;
+  }
+  .routine-item.done .checkbox svg{ opacity:1; }
+
+  .routine-name{
+    flex:1;
+    font-size:16px;
+    font-weight:500;
+    color: var(--text);
+  }
+  .routine-item.done .routine-name{
+    color: var(--text-dim);
+    text-decoration: line-through;
+    text-decoration-color: var(--text-dim);
+  }
+
+  /* ---- Inactive toggle ---- */
+  .inactive-toggle{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:6px;
+    width:100%;
+    background:none;
+    border:none;
+    color: var(--text-dim);
+    font-family:inherit;
+    font-size: 13px;
+    padding: 12px 0;
+    cursor:pointer;
+  }
+  .inactive-toggle svg{
+    width:12px; height:12px;
+    transition: transform 0.2s;
+  }
+  .inactive-toggle.open svg{ transform: rotate(180deg); }
+
+  .inactive-list{
+    max-height:0;
+    overflow:hidden;
+    transition: max-height 0.3s ease;
+  }
+  .inactive-list.open{ max-height: 500px; }
+
+  .inactive-item{
+    display:flex;
+    align-items:center;
+    gap:14px;
+    padding: 14px 16px;
+    color: var(--text-dim);
+    font-size:15px;
+    border-bottom: 1px solid var(--line);
+  }
+  .inactive-dot{
+    width:8px;height:8px;border-radius:50%;
+    background: var(--text-dim);
+    flex-shrink:0;
+  }
+
+  /* ---- States ---- */
+  .state-box{
+    text-align:center;
+    padding: 60px 20px;
+    color: var(--text-dim);
+    font-size:14px;
+  }
+  .spinner{
+    width:28px;height:28px;
+    border:3px solid var(--line);
+    border-top-color: var(--amber);
+    border-radius:50%;
+    margin: 0 auto 14px;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+
+  .retry-btn{
+    margin-top:14px;
+    background: var(--amber);
+    color:#1a1200;
+    border:none;
+    border-radius:10px;
+    padding:10px 20px;
+    font-family:inherit;
+    font-size:14px;
+    font-weight:600;
+  }
+
+  .hidden{ display:none !important; }
+</style>
+</head>
+<body>
+
+  <div class="header">
+    <div class="gauge-wrap">
+      <svg width="150" height="150" viewBox="0 0 150 150">
+        <circle class="gauge-bg" cx="75" cy="75" r="65"></circle>
+        <circle class="gauge-fg" id="gaugeFg" cx="75" cy="75" r="65"
+          stroke-dasharray="408.4" stroke-dashoffset="408.4"></circle>
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-count" id="doneCount">0</div>
+        <div class="gauge-total" id="totalCount">/ 0 완료</div>
+      </div>
+    </div>
+    <div class="header-date" id="todayLabel"></div>
+  </div>
+
+  <div id="loadingState" class="state-box">
+    <div class="spinner"></div>
+    루틴을 불러오는 중...
+  </div>
+
+  <div id="errorState" class="state-box hidden">
+    데이터를 불러오지 못했어요.<br>연결 상태를 확인해주세요.
+    <br>
+    <button class="retry-btn" onclick="loadRoutines()">다시 시도</button>
+  </div>
+
+  <div id="content" class="hidden">
+    <div class="section-title">오늘의 루틴</div>
+    <div class="list" id="activeList"></div>
+
+    <button class="inactive-toggle" id="inactiveToggle" onclick="toggleInactive()">
+      <span id="inactiveLabel">비활성 루틴 보기</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 9l6 6 6-6"/>
+      </svg>
+    </button>
+    <div class="inactive-list" id="inactiveList"></div>
+  </div>
+
+<script>
+  const API_URL = 'https://adept-mastiff.pikapod.net/webhook/routines';
+
+  // 완료 상태는 아직 로컬(메모리)에만 저장됩니다. (서버 저장은 다음 단계에서 추가)
+  let doneSet = new Set();
+  let routines = [];
+
+  function setToday(){
+    const d = new Date();
+    const days = ['일','월','화','수','목','금','토'];
+    document.getElementById('todayLabel').textContent =
+      `${d.getMonth()+1}월 ${d.getDate()}일 (${days[d.getDay()]})`;
+  }
+
+  async function loadRoutines(){
+    document.getElementById('loadingState').classList.remove('hidden');
+    document.getElementById('errorState').classList.add('hidden');
+    document.getElementById('content').classList.add('hidden');
+
+    try{
+      const res = await fetch(API_URL, { method: 'GET' });
+      if(!res.ok) throw new Error('bad response');
+      const data = await res.json();
+      routines = Array.isArray(data) ? data : [];
+      render();
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('content').classList.remove('hidden');
+    }catch(e){
+      document.getElementById('loadingState').classList.add('hidden');
+      document.getElementById('errorState').classList.remove('hidden');
+    }
+  }
+
+  function render(){
+    const active = routines.filter(r => r['활성여부'] === 'Y');
+    const inactive = routines.filter(r => r['활성여부'] !== 'Y');
+
+    // active list
+    const activeList = document.getElementById('activeList');
+    activeList.innerHTML = '';
+    active.forEach(r => {
+      const name = r['루틴명'];
+      const item = document.createElement('div');
+      item.className = 'routine-item' + (doneSet.has(name) ? ' done' : '');
+      item.onclick = () => toggleDone(name, item);
+      item.innerHTML = `
+        <div class="checkbox">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div class="routine-name">${escapeHtml(name)}</div>
+      `;
+      activeList.appendChild(item);
+    });
+
+    // inactive list
+    const inactiveList = document.getElementById('inactiveList');
+    inactiveList.innerHTML = '';
+    inactive.forEach(r => {
+      const el = document.createElement('div');
+      el.className = 'inactive-item';
+      el.innerHTML = `<div class="inactive-dot"></div>${escapeHtml(r['루틴명'])}`;
+      inactiveList.appendChild(el);
+    });
+    document.getElementById('inactiveLabel').textContent = `비활성 루틴 보기 (${inactive.length})`;
+
+    updateGauge(active.length);
+  }
+
+  function toggleDone(name, el){
+    if(doneSet.has(name)){
+      doneSet.delete(name);
+      el.classList.remove('done');
+    }else{
+      doneSet.add(name);
+      el.classList.add('done');
+    }
+    const activeCount = routines.filter(r => r['활성여부'] === 'Y').length;
+    updateGauge(activeCount);
+  }
+
+  function updateGauge(total){
+    const done = doneSet.size;
+    document.getElementById('doneCount').textContent = done;
+    document.getElementById('totalCount').textContent = `/ ${total} 완료`;
+
+    const circumference = 2 * Math.PI * 65; // ≈408.4
+    const ratio = total > 0 ? Math.min(done/total, 1) : 0;
+    const offset = circumference * (1 - ratio);
+    document.getElementById('gaugeFg').style.strokeDashoffset = offset;
+  }
+
+  function toggleInactive(){
+    document.getElementById('inactiveList').classList.toggle('open');
+    document.getElementById('inactiveToggle').classList.toggle('open');
+  }
+
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str;
+    return div.innerHTML;
+  }
+
+  setToday();
+  loadRoutines();
+</script>
+</body>
+</html>
