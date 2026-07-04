@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Webhook 테스트 도구</title>
+<style>
+  body{
+    font-family: -apple-system, sans-serif;
+    background: #121212;
+    color: #f2f2f2;
+    padding: 20px;
+    max-width: 480px;
+    margin: 0 auto;
+  }
+  h2{ font-size: 18px; margin-bottom: 4px; }
+  .desc{ color:#8a8a8a; font-size:13px; margin-bottom:24px; }
+  .card{
+    background: #1c1c1c;
+    border: 1px solid #2a2a2a;
+    border-radius: 12px;
+    padding: 16px;
+    margin-bottom: 16px;
+  }
+  .card h3{ font-size:15px; margin:0 0 10px; color:#FFB020; }
+  input, select{
+    width:100%;
+    padding:10px;
+    margin-bottom:8px;
+    border-radius:8px;
+    border:1px solid #333;
+    background:#0f0f0f;
+    color:#f2f2f2;
+    font-size:14px;
+    box-sizing:border-box;
+  }
+  button{
+    padding:10px 16px;
+    border-radius:8px;
+    border:none;
+    background:#FFB020;
+    color:#1a1200;
+    font-weight:600;
+    font-size:14px;
+    margin-right:8px;
+    margin-bottom:8px;
+  }
+  button.secondary{
+    background:#333;
+    color:#f2f2f2;
+  }
+  .result{
+    background:#0f0f0f;
+    border-radius:8px;
+    padding:10px;
+    font-size:12px;
+    white-space:pre-wrap;
+    word-break:break-all;
+    color:#8f8;
+    min-height:20px;
+    border:1px solid #2a2a2a;
+  }
+  .result.error{ color:#f88; }
+  .url-input{ font-size:12px; color:#8a8a8a; }
+</style>
+</head>
+<body>
+
+  <h2>🔧 Webhook 테스트 도구</h2>
+  <div class="desc">n8n Webhook들을 각각 테스트할 수 있는 임시 도구입니다.<br>URL은 각 카드마다 직접 입력/수정 가능합니다.</div>
+
+  <!-- 카드 1: 루틴 추가 -->
+  <div class="card">
+    <h3>루틴 추가 (POST)</h3>
+    <input type="text" class="url-input" id="url-add" value="https://adept-mastiff.pikapod.net/webhook/routine-add">
+    <input type="text" id="input-add" placeholder="루틴 이름 (예: 스쿼트 30개)">
+    <button onclick="testPost('url-add','input-add','result-add','routineName')">추가 요청 보내기</button>
+    <div class="result" id="result-add"></div>
+  </div>
+
+  <!-- 카드 2: 루틴 삭제 (나중에 URL만 채우면 바로 사용 가능) -->
+  <div class="card">
+    <h3>루틴 삭제 (POST)</h3>
+    <input type="text" class="url-input" id="url-delete" value="https://adept-mastiff.pikapod.net/webhook/routine-delete">
+    <input type="text" id="input-delete" placeholder="루틴 이름">
+    <button onclick="testPost('url-delete','input-delete','result-delete','routineName')">삭제 요청 보내기</button>
+    <div class="result" id="result-delete"></div>
+  </div>
+
+  <!-- 카드 3: 체크 저장 (이미 완성된 것, 재검증용) -->
+  <div class="card">
+    <h3>루틴 체크 저장 (POST)</h3>
+    <input type="text" class="url-input" id="url-check" value="https://adept-mastiff.pikapod.net/webhook/check">
+    <input type="text" id="input-check" placeholder="루틴 이름">
+    <button onclick="testPost('url-check','input-check','result-check','routineName')">체크 요청 보내기</button>
+    <div class="result" id="result-check"></div>
+  </div>
+
+  <!-- 카드 4: GET 방식 범용 테스트 (뉴스/일정 조회용 등) -->
+  <div class="card">
+    <h3>GET 조회 테스트 (범용)</h3>
+    <input type="text" class="url-input" id="url-get" value="https://adept-mastiff.pikapod.net/webhook/routines">
+    <button onclick="testGet('url-get','result-get')">조회 요청 보내기</button>
+    <div class="result" id="result-get"></div>
+  </div>
+
+<script>
+  async function testPost(urlId, inputId, resultId, fieldName){
+    const url = document.getElementById(urlId).value.trim();
+    const value = document.getElementById(inputId).value.trim();
+    const resultEl = document.getElementById(resultId);
+    resultEl.textContent = '요청 보내는 중...';
+    resultEl.className = 'result';
+
+    try{
+      const res = await fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ [fieldName]: value })
+      });
+      const text = await res.text();
+      resultEl.textContent = `[${res.status}] ${text}`;
+      if(!res.ok) resultEl.className = 'result error';
+    }catch(e){
+      resultEl.textContent = '요청 실패: ' + e.message;
+      resultEl.className = 'result error';
+    }
+  }
+
+  async function testGet(urlId, resultId){
+    const url = document.getElementById(urlId).value.trim();
+    const resultEl = document.getElementById(resultId);
+    resultEl.textContent = '요청 보내는 중...';
+    resultEl.className = 'result';
+
+    try{
+      const res = await fetch(url);
+      const text = await res.text();
+      resultEl.textContent = `[${res.status}] ${text}`;
+      if(!res.ok) resultEl.className = 'result error';
+    }catch(e){
+      resultEl.textContent = '요청 실패: ' + e.message;
+      resultEl.className = 'result error';
+    }
+  }
+</script>
+</body>
+</html>
