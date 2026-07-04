@@ -128,6 +128,14 @@
     <div class="result" id="result-weather"></div>
   </div>
 
+  <!-- 카드 8: 체크 기록 조회 -->
+  <div class="card">
+    <h3>체크 기록 조회 (GET)</h3>
+    <input type="text" class="url-input" id="url-history" value="https://adept-mastiff.pikapod.net/webhook/check-history">
+    <button onclick="testGet('url-history','result-history')">기록 요청 보내기</button>
+    <div class="result" id="result-history"></div>
+  </div>
+
 <script>
   async function testPost(urlId, inputId, resultId, fieldName){
     const url = document.getElementById(urlId).value.trim();
