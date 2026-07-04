@@ -96,12 +96,20 @@
     <div class="result" id="result-check"></div>
   </div>
 
-  <!-- 카드 4: GET 방식 범용 테스트 (뉴스/일정 조회용 등) -->
+  <!-- 카드 4: GET 조회 테스트 (범용) -->
   <div class="card">
     <h3>GET 조회 테스트 (범용)</h3>
     <input type="text" class="url-input" id="url-get" value="https://adept-mastiff.pikapod.net/webhook/routines">
     <button onclick="testGet('url-get','result-get')">조회 요청 보내기</button>
     <div class="result" id="result-get"></div>
+  </div>
+
+  <!-- 카드 5: 뉴스 조회 -->
+  <div class="card">
+    <h3>뉴스 조회 (GET)</h3>
+    <input type="text" class="url-input" id="url-news" value="https://adept-mastiff.pikapod.net/webhook/news">
+    <button onclick="testGet('url-news','result-news')">뉴스 요청 보내기</button>
+    <div class="result" id="result-news"></div>
   </div>
 
 <script>
