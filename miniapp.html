@@ -132,7 +132,53 @@
     font-weight:600;
   }
 
-  /* ---- Calendar list ---- */
+  /* ---- Calendar grid ---- */
+  .cal-header{
+    display:flex; align-items:center; justify-content:space-between;
+    margin: 4px 0 14px;
+  }
+  .cal-nav-btn{
+    background:var(--bg-elevated); border:1px solid var(--line); color:var(--text);
+    width:36px; height:36px; border-radius:10px; font-size:18px;
+  }
+  .cal-month-label{ font-size:16px; font-weight:700; }
+  .cal-weekdays{
+    display:grid; grid-template-columns: repeat(7, 1fr);
+    text-align:center; font-size:12px; color:var(--text-dim); margin-bottom:6px;
+  }
+  .cal-wd.sun{ color:var(--red); }
+  .cal-wd.sat{ color:#6ba3ff; }
+  .cal-grid{
+    display:grid; grid-template-columns: repeat(7, 1fr);
+    gap:4px; margin-bottom:8px;
+  }
+  .cal-cell{
+    aspect-ratio: 1;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    border-radius:10px; font-size:13px; position:relative;
+    background: transparent; border:1px solid transparent; color:var(--text);
+  }
+  .cal-cell.empty{ visibility:hidden; }
+  .cal-cell.sun, .cal-cell.holiday{ color: var(--red); }
+  .cal-cell.sat{ color:#6ba3ff; }
+  .cal-cell.today{ background: var(--amber); color:#1a1200; font-weight:700; }
+  .cal-cell.selected:not(.today){ border-color: var(--amber); }
+  .cal-cell .dot{
+    width:5px; height:5px; border-radius:50%; background: var(--amber);
+    position:absolute; bottom:5px;
+  }
+  .cal-cell.today .dot{ background:#1a1200; }
+  .cal-holiday-name{
+    font-size:10px; color:var(--text-dim); text-align:center; margin:-6px 0 10px;
+    grid-column: 1 / -1;
+  }
+  .selected-event-item{
+    background: var(--bg-elevated); border:1px solid var(--line); border-radius:12px;
+    padding:12px 14px; margin-bottom:8px; font-size:14px;
+  }
+  .selected-event-item .t{ font-weight:600; }
+  .selected-event-item .tm{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+
   .event-item{
     background: var(--bg-elevated);
     border:1px solid var(--line);
@@ -307,8 +353,27 @@
   <!-- ============ 일정 탭 ============ -->
   <div class="page" id="page-calendar">
     <div class="topbar">일정</div>
-    <div id="calLoading" class="state-box"><div class="spinner"></div>일정 불러오는 중...</div>
+
+    <div class="cal-header">
+      <button class="cal-nav-btn" onclick="changeMonth(-1)">‹</button>
+      <div class="cal-month-label" id="calMonthLabel">-</div>
+      <button class="cal-nav-btn" onclick="changeMonth(1)">›</button>
+    </div>
+
+    <div id="calGridLoading" class="state-box" style="padding:30px 0;"><div class="spinner"></div>불러오는 중...</div>
+    <div id="calGridWrap" class="hidden">
+      <div class="cal-weekdays">
+        <div class="cal-wd sun">일</div><div class="cal-wd">월</div><div class="cal-wd">화</div>
+        <div class="cal-wd">수</div><div class="cal-wd">목</div><div class="cal-wd">금</div><div class="cal-wd sat">토</div>
+      </div>
+      <div class="cal-grid" id="calGrid"></div>
+
+      <div class="section-title">선택한 날의 일정</div>
+      <div id="selectedDayEvents"></div>
+    </div>
     <div id="calError" class="state-box hidden">일정을 불러오지 못했어요.<br><button class="retry-btn" onclick="loadCalendar()">다시 시도</button></div>
+
+    <div class="section-title">다가오는 일정</div>
     <div id="calEmpty" class="empty-box hidden"><div class="big">🗓️</div>앞으로 14일 안에 예정된 일정이 없어요.</div>
     <div id="calList"></div>
   </div>
@@ -420,7 +485,8 @@
     calendarUpdate: BASE + '/calendar-update',
     calendarDelete: BASE + '/calendar-delete',
     weather: BASE + '/weather',
-    checkHistory: BASE + '/check-history'
+    checkHistory: BASE + '/check-history',
+    holidays: BASE + '/holidays'
   };
 
   function show(id){ document.getElementById(id).classList.remove('hidden'); }
@@ -485,8 +551,8 @@
 
   /* ================== 뉴스 ================== */
   let allNews = [];
-  let newsShown = 0;
-  const NEWS_PAGE = 6;
+  let newsExpanded = false;
+  const NEWS_COLLAPSED = 6;
 
   async function loadNews(){
     hide('newsError'); hide('newsList'); hide('newsMoreBtn');
@@ -496,7 +562,7 @@
       const data = await res.json();
       const wrapped = Array.isArray(data) ? data[0] : data;
       allNews = (wrapped && wrapped.articles) ? wrapped.articles : [];
-      newsShown = 0;
+      newsExpanded = false;
       hide('newsLoading');
       show('newsList');
       renderNews();
@@ -508,8 +574,10 @@
 
   function renderNews(){
     const listEl = document.getElementById('newsList');
-    const nextBatch = allNews.slice(newsShown, newsShown + NEWS_PAGE);
-    nextBatch.forEach(article => {
+    listEl.innerHTML = '';
+    const visible = newsExpanded ? allNews : allNews.slice(0, NEWS_COLLAPSED);
+
+    visible.forEach(article => {
       const el = document.createElement('a');
       el.className = 'news-card';
       el.href = article.url || '#';
@@ -528,26 +596,174 @@
       `;
       listEl.appendChild(el);
     });
-    newsShown += nextBatch.length;
-    if(newsShown < allNews.length){ show('newsMoreBtn'); } else { hide('newsMoreBtn'); }
-  }
-  function showMoreNews(){ renderNews(); }
 
-  /* ================== 일정 조회 (뷰용) ================== */
+    const moreBtn = document.getElementById('newsMoreBtn');
+    if(allNews.length > NEWS_COLLAPSED){
+      moreBtn.textContent = newsExpanded ? '접기' : '더보기';
+      show('newsMoreBtn');
+    }else{
+      hide('newsMoreBtn');
+    }
+  }
+  function showMoreNews(){
+    newsExpanded = !newsExpanded;
+    renderNews();
+  }
+
+  /* ================== 일정 조회 (달력 뷰) ================== */
+  let calendarEvents = [];
+  let eventsByDate = {};
+  let holidayMap = {};
+  let calViewYear, calViewMonth; // calViewMonth: 0-indexed
+  let selectedDateStr = null;
+
+  function dateKey(d){
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+
   async function loadCalendar(){
-    hide('calError'); hide('calEmpty'); hide('calLoading');
-    show('calLoading');
+    hide('calError'); hide('calEmpty'); hide('calGridWrap');
+    show('calGridLoading');
     document.getElementById('calList').innerHTML = '';
+
+    const today = new Date();
+    calViewYear = today.getFullYear();
+    calViewMonth = today.getMonth();
+    selectedDateStr = dateKey(today);
+
     try{
-      const res = await fetch(API.calendar);
-      const events = await res.json();
-      hide('calLoading');
-      if(!Array.isArray(events) || events.length === 0){ show('calEmpty'); return; }
-      renderCalendarList(events, document.getElementById('calList'), false);
+      const [evRes, holRes] = await Promise.all([
+        fetch(API.calendar),
+        fetch(API.holidays).catch(()=>null)
+      ]);
+      const events = await evRes.json();
+      calendarEvents = Array.isArray(events) ? events : [];
+
+      eventsByDate = {};
+      calendarEvents.forEach(ev => {
+        const start = ev.start?.dateTime || ev.start?.date;
+        if(!start) return;
+        const key = start.substring(0,10);
+        if(!eventsByDate[key]) eventsByDate[key] = [];
+        eventsByDate[key].push(ev);
+      });
+
+      holidayMap = {};
+      if(holRes && holRes.ok){
+        try{
+          const holData = await holRes.json();
+          const wrapped = Array.isArray(holData) ? holData[0] : holData;
+          const items = wrapped?.response?.body?.items?.item;
+          const list = Array.isArray(items) ? items : (items ? [items] : []);
+          list.forEach(h => {
+            const s = String(h.locdate);
+            const key = `${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}`;
+            holidayMap[key] = h.dateName;
+          });
+        }catch(e){ /* 공휴일 실패해도 달력은 그대로 표시 */ }
+      }
+
+      hide('calGridLoading');
+      show('calGridWrap');
+      renderCalGrid();
+      renderSelectedDayEvents();
+
+      if(calendarEvents.length === 0){ show('calEmpty'); }
+      else{ renderCalendarList(calendarEvents, document.getElementById('calList'), false); }
     }catch(e){
-      hide('calLoading');
+      hide('calGridLoading');
       show('calError');
     }
+  }
+
+  function changeMonth(delta){
+    calViewMonth += delta;
+    if(calViewMonth < 0){ calViewMonth = 11; calViewYear--; }
+    if(calViewMonth > 11){ calViewMonth = 0; calViewYear++; }
+    renderCalGrid();
+  }
+
+  function renderCalGrid(){
+    const labelEl = document.getElementById('calMonthLabel');
+    labelEl.textContent = `${calViewYear}년 ${calViewMonth+1}월`;
+
+    const gridEl = document.getElementById('calGrid');
+    gridEl.innerHTML = '';
+
+    const firstDay = new Date(calViewYear, calViewMonth, 1);
+    const startWeekday = firstDay.getDay();
+    const daysInMonth = new Date(calViewYear, calViewMonth+1, 0).getDate();
+    const today = new Date();
+    const todayKey = dateKey(today);
+
+    for(let i=0; i<startWeekday; i++){
+      const empty = document.createElement('div');
+      empty.className = 'cal-cell empty';
+      gridEl.appendChild(empty);
+    }
+
+    for(let day=1; day<=daysInMonth; day++){
+      const d = new Date(calViewYear, calViewMonth, day);
+      const key = dateKey(d);
+      const weekday = d.getDay();
+      const cell = document.createElement('div');
+      let cls = 'cal-cell';
+      if(weekday === 0) cls += ' sun';
+      if(weekday === 6) cls += ' sat';
+      if(holidayMap[key]) cls += ' holiday';
+      if(key === todayKey) cls += ' today';
+      if(key === selectedDateStr) cls += ' selected';
+      cell.className = cls;
+      cell.onclick = () => selectDay(key);
+
+      const hasEvent = eventsByDate[key] && eventsByDate[key].length > 0;
+      cell.innerHTML = `${day}${hasEvent ? '<div class="dot"></div>' : ''}`;
+      gridEl.appendChild(cell);
+
+      if(holidayMap[key]){
+        cell.title = holidayMap[key];
+      }
+    }
+  }
+
+  function selectDay(key){
+    selectedDateStr = key;
+    renderCalGrid();
+    renderSelectedDayEvents();
+  }
+
+  function renderSelectedDayEvents(){
+    const container = document.getElementById('selectedDayEvents');
+    container.innerHTML = '';
+    const events = eventsByDate[selectedDateStr] || [];
+    const holidayName = holidayMap[selectedDateStr];
+
+    if(holidayName){
+      const h = document.createElement('div');
+      h.className = 'selected-event-item';
+      h.innerHTML = `<div class="t" style="color:var(--red);">🔴 ${escapeHtml(holidayName)}</div>`;
+      container.appendChild(h);
+    }
+
+    if(events.length === 0 && !holidayName){
+      container.innerHTML += `<div class="empty-box" style="padding:20px 0;">이 날은 일정이 없어요.</div>`;
+      return;
+    }
+
+    events.forEach(ev => {
+      const start = ev.start?.dateTime || ev.start?.date;
+      const d = new Date(start);
+      const timeStr = ev.start?.dateTime
+        ? d.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'})
+        : '종일';
+      const el = document.createElement('div');
+      el.className = 'selected-event-item';
+      el.innerHTML = `
+        <div class="t">${escapeHtml(ev.summary || '(제목 없음)')}</div>
+        <div class="tm">${timeStr}</div>
+      `;
+      container.appendChild(el);
+    });
   }
 
   function renderCalendarList(events, container, editable){
