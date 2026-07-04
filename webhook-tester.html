@@ -112,6 +112,14 @@
     <div class="result" id="result-news"></div>
   </div>
 
+  <!-- 카드 6: 일정 조회 -->
+  <div class="card">
+    <h3>일정 조회 (GET)</h3>
+    <input type="text" class="url-input" id="url-calendar" value="https://adept-mastiff.pikapod.net/webhook/calendar">
+    <button onclick="testGet('url-calendar','result-calendar')">일정 요청 보내기</button>
+    <div class="result" id="result-calendar"></div>
+  </div>
+
 <script>
   async function testPost(urlId, inputId, resultId, fieldName){
     const url = document.getElementById(urlId).value.trim();
