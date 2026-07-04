@@ -1,0 +1,869 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>내 비서</title>
+<link rel="preconnect" href="https://cdn.jsdelivr.net">
+<link rel="stylesheet" as="style" crossorigin
+  href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.css">
+<style>
+  :root{
+    --bg: #121212;
+    --bg-elevated: #1c1c1c;
+    --amber: #FFB020;
+    --amber-dim: rgba(255,176,32,0.15);
+    --text: #F2F2F2;
+    --text-dim: #8a8a8a;
+    --line: #2a2a2a;
+    --red: #ff6b6b;
+  }
+  *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
+  html,body{
+    margin:0; padding:0;
+    background:var(--bg);
+    color:var(--text);
+    font-family:'Pretendard', -apple-system, sans-serif;
+    -webkit-font-smoothing:antialiased;
+  }
+  body{
+    min-height:100vh;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 84px;
+  }
+  button{ font-family:inherit; }
+
+  /* ---- Top bar ---- */
+  .topbar{
+    padding: 18px 20px 8px;
+    font-size: 17px;
+    font-weight:700;
+  }
+
+  /* ---- Tabs (bottom nav) ---- */
+  .tabbar{
+    position:fixed;
+    bottom:0; left:0; right:0;
+    max-width:480px;
+    margin:0 auto;
+    background:var(--bg-elevated);
+    border-top:1px solid var(--line);
+    display:flex;
+    padding: 6px 0 max(6px, env(safe-area-inset-bottom));
+    z-index: 100;
+  }
+  .tab-btn{
+    flex:1;
+    background:none;
+    border:none;
+    color:var(--text-dim);
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:2px;
+    font-size:11px;
+    padding:8px 0 4px;
+    cursor:pointer;
+  }
+  .tab-btn .icon{ font-size:20px; }
+  .tab-btn.active{ color:var(--amber); }
+
+  .page{ display:none; padding: 8px 20px 20px; }
+  .page.active{ display:block; }
+
+  /* ---- Section titles ---- */
+  .section-title{
+    font-size: 13px;
+    color: var(--text-dim);
+    font-weight:600;
+    letter-spacing:0.04em;
+    margin: 20px 4px 12px;
+    text-transform: uppercase;
+  }
+  .section-title:first-child{ margin-top:4px; }
+
+  /* ---- Weather card ---- */
+  .weather-card{
+    background: linear-gradient(135deg, rgba(255,176,32,0.12), var(--bg-elevated));
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    padding: 18px 20px;
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-bottom: 8px;
+  }
+  .weather-temp{ font-size: 28px; font-weight:700; }
+  .weather-sub{ font-size: 12px; color:var(--text-dim); margin-top:4px; }
+  .weather-icon{ font-size: 36px; }
+
+  /* ---- News cards ---- */
+  .news-list{ display:flex; flex-direction:column; gap:14px; }
+  .news-card{
+    background: var(--bg-elevated);
+    border:1px solid var(--line);
+    border-radius: 14px;
+    overflow:hidden;
+    display:block;
+    text-decoration:none;
+    color:inherit;
+  }
+  .news-img{
+    width:100%; height:160px;
+    object-fit:cover;
+    background:#000;
+    display:block;
+  }
+  .news-img.hidden{ display:none; }
+  .news-body{ padding: 12px 14px; }
+  .news-title{ font-size:15px; font-weight:600; line-height:1.4; margin-bottom:6px; }
+  .news-meta{ font-size:12px; color:var(--text-dim); }
+
+  .more-btn{
+    width:100%;
+    margin-top:14px;
+    background:var(--bg-elevated);
+    border:1px solid var(--line);
+    color:var(--text);
+    border-radius:10px;
+    padding:12px 0;
+    font-size:14px;
+    font-weight:600;
+  }
+
+  /* ---- Calendar list ---- */
+  .event-item{
+    background: var(--bg-elevated);
+    border:1px solid var(--line);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom:10px;
+    display:flex;
+    gap:14px;
+    align-items:center;
+  }
+  .event-date{
+    flex-shrink:0;
+    width:48px;
+    text-align:center;
+  }
+  .event-date .d{ font-size:20px; font-weight:700; color:var(--amber); }
+  .event-date .w{ font-size:11px; color:var(--text-dim); }
+  .event-info{ flex:1; }
+  .event-title{ font-size:15px; font-weight:600; }
+  .event-time{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+
+  /* ---- Routine (기존 스타일 재사용) ---- */
+  .gauge-wrap{ position:relative; width:130px; height:130px; margin: 8px auto 14px; }
+  .gauge-wrap svg{ transform: rotate(-90deg); }
+  .gauge-bg{ fill:none; stroke: var(--line); stroke-width: 10; }
+  .gauge-fg{ fill:none; stroke: var(--amber); stroke-width: 10; stroke-linecap: round; transition: stroke-dashoffset 0.6s cubic-bezier(.4,0,.2,1); }
+  .gauge-center{ position:absolute; inset:0; display:flex; flex-direction:column; align-items:center; justify-content:center; }
+  .gauge-count{ font-size: 30px; font-weight:700; letter-spacing:-0.02em; }
+  .gauge-total{ font-size: 12px; color: var(--text-dim); margin-top: 2px; }
+
+  .routine-item{
+    display:flex; align-items:center; gap:14px;
+    background: var(--bg-elevated); border: 1px solid var(--line);
+    border-radius: 14px; padding: 16px; margin-bottom:10px;
+    transition: border-color 0.2s, background 0.2s;
+  }
+  .routine-item.done{ border-color: var(--amber); background: linear-gradient(0deg, var(--amber-dim), var(--amber-dim)), var(--bg-elevated); }
+  .checkbox{
+    flex-shrink:0; width:24px; height:24px; border-radius: 8px;
+    border: 2px solid var(--text-dim); display:flex; align-items:center; justify-content:center;
+    transition: all 0.2s;
+  }
+  .routine-item.done .checkbox{ border-color: var(--amber); background: var(--amber); }
+  .checkbox svg{ width:14px; height:14px; opacity:0; transition: opacity 0.15s; }
+  .routine-item.done .checkbox svg{ opacity:1; }
+  .routine-name{ flex:1; font-size:16px; font-weight:500; }
+  .routine-item.done .routine-name{ color: var(--text-dim); text-decoration: line-through; }
+
+  .inactive-toggle{
+    display:flex; align-items:center; justify-content:center; gap:6px; width:100%;
+    background:none; border:none; color: var(--text-dim); font-size: 13px; padding: 12px 0;
+  }
+  .inactive-toggle svg{ width:12px; height:12px; transition: transform 0.2s; }
+  .inactive-toggle.open svg{ transform: rotate(180deg); }
+  .inactive-list{ max-height:0; overflow:hidden; transition: max-height 0.3s ease; }
+  .inactive-list.open{ max-height: 500px; }
+  .inactive-item{
+    display:flex; align-items:center; gap:14px; padding: 14px 16px; color: var(--text-dim);
+    font-size:15px; border-bottom: 1px solid var(--line);
+  }
+  .inactive-dot{ width:8px;height:8px;border-radius:50%; background: var(--text-dim); flex-shrink:0; }
+
+  /* ---- Empty state ---- */
+  .empty-box{
+    text-align:center; padding: 40px 20px; color: var(--text-dim); font-size:14px;
+  }
+  .empty-box .big{ font-size:32px; margin-bottom:10px; }
+
+  /* ---- Loading / error ---- */
+  .state-box{ text-align:center; padding: 50px 20px; color: var(--text-dim); font-size:14px; }
+  .spinner{
+    width:26px;height:26px; border:3px solid var(--line); border-top-color: var(--amber);
+    border-radius:50%; margin: 0 auto 14px; animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin{ to{ transform:rotate(360deg); } }
+  .retry-btn{
+    margin-top:14px; background: var(--amber); color:#1a1200; border:none;
+    border-radius:10px; padding:10px 20px; font-size:14px; font-weight:600;
+  }
+  .hidden{ display:none !important; }
+
+  /* ---- Management (관리) tab ---- */
+  .subtab-bar{ display:flex; gap:8px; margin-bottom:16px; }
+  .subtab-btn{
+    flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text-dim);
+    border-radius:10px; padding:10px 0; font-size:14px; font-weight:600;
+  }
+  .subtab-btn.active{ color:var(--amber); border-color:var(--amber); }
+  .subpage{ display:none; }
+  .subpage.active{ display:block; }
+
+  .form-row{ display:flex; gap:8px; margin-bottom: 16px; }
+  .form-row input{
+    flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text);
+    border-radius:10px; padding:12px 14px; font-size:14px;
+  }
+  .form-row input::placeholder{ color:var(--text-dim); }
+  .btn-primary{
+    background:var(--amber); color:#1a1200; border:none; border-radius:10px;
+    padding:0 18px; font-size:14px; font-weight:700;
+  }
+
+  .manage-item{
+    display:flex; align-items:center; justify-content:space-between;
+    background:var(--bg-elevated); border:1px solid var(--line); border-radius:12px;
+    padding:14px 16px; margin-bottom:8px;
+  }
+  .manage-item .name{ font-size:15px; }
+  .btn-delete{
+    background:none; border:1px solid var(--red); color:var(--red);
+    border-radius:8px; padding:6px 12px; font-size:12px; font-weight:600;
+  }
+  .btn-edit{
+    background:none; border:1px solid var(--text-dim); color:var(--text-dim);
+    border-radius:8px; padding:6px 12px; font-size:12px; font-weight:600; margin-right:6px;
+  }
+
+  .history-group{ margin-bottom: 18px; }
+  .history-date{ font-size:13px; color:var(--text-dim); margin-bottom:8px; font-weight:600; }
+  .history-chip{
+    display:inline-block; background:var(--bg-elevated); border:1px solid var(--line);
+    border-radius:20px; padding:6px 12px; font-size:12px; margin:0 6px 6px 0;
+  }
+
+  .toast{
+    position:fixed; bottom:100px; left:50%; transform:translateX(-50%);
+    background: var(--amber); color:#1a1200; padding:10px 20px; border-radius:20px;
+    font-size:13px; font-weight:600; z-index:200; opacity:0; transition:opacity 0.3s;
+    pointer-events:none; white-space:nowrap;
+  }
+  .toast.show{ opacity:1; }
+
+  .event-edit-form{
+    background:var(--bg-elevated); border:1px solid var(--amber); border-radius:12px;
+    padding:14px; margin-top:8px; display:none;
+  }
+  .event-edit-form.open{ display:block; }
+  .event-edit-form input{
+    width:100%; background:var(--bg); border:1px solid var(--line); color:var(--text);
+    border-radius:8px; padding:10px 12px; font-size:13px; margin-bottom:8px;
+  }
+  .event-edit-form .row-btns{ display:flex; gap:8px; }
+  .event-edit-form .row-btns button{
+    flex:1; border-radius:8px; padding:10px 0; font-size:13px; font-weight:600; border:none;
+  }
+</style>
+</head>
+<body>
+
+  <!-- ============ 뉴스 탭 ============ -->
+  <div class="page active" id="page-news">
+    <div class="topbar">오늘</div>
+
+    <div id="weatherLoading" class="state-box" style="padding:24px 0;">
+      <div class="spinner"></div>날씨 불러오는 중...
+    </div>
+    <div id="weatherCard" class="weather-card hidden">
+      <div>
+        <div class="weather-temp" id="wTemp">-</div>
+        <div class="weather-sub" id="wSub">-</div>
+      </div>
+      <div class="weather-icon" id="wIcon">☁️</div>
+    </div>
+
+    <div class="section-title">오늘의 뉴스</div>
+    <div id="newsLoading" class="state-box"><div class="spinner"></div>뉴스 불러오는 중...</div>
+    <div id="newsError" class="state-box hidden">뉴스를 불러오지 못했어요.<br><button class="retry-btn" onclick="loadNews()">다시 시도</button></div>
+    <div id="newsList" class="news-list hidden"></div>
+    <button id="newsMoreBtn" class="more-btn hidden" onclick="showMoreNews()">더보기</button>
+  </div>
+
+  <!-- ============ 일정 탭 ============ -->
+  <div class="page" id="page-calendar">
+    <div class="topbar">일정</div>
+    <div id="calLoading" class="state-box"><div class="spinner"></div>일정 불러오는 중...</div>
+    <div id="calError" class="state-box hidden">일정을 불러오지 못했어요.<br><button class="retry-btn" onclick="loadCalendar()">다시 시도</button></div>
+    <div id="calEmpty" class="empty-box hidden"><div class="big">🗓️</div>앞으로 14일 안에 예정된 일정이 없어요.</div>
+    <div id="calList"></div>
+  </div>
+
+  <!-- ============ 루틴 탭 ============ -->
+  <div class="page" id="page-routine">
+    <div class="topbar">루틴</div>
+    <div class="gauge-wrap">
+      <svg width="130" height="130" viewBox="0 0 150 150">
+        <circle class="gauge-bg" cx="75" cy="75" r="65"></circle>
+        <circle class="gauge-fg" id="gaugeFg" cx="75" cy="75" r="65" stroke-dasharray="408.4" stroke-dashoffset="408.4"></circle>
+      </svg>
+      <div class="gauge-center">
+        <div class="gauge-count" id="doneCount">0</div>
+        <div class="gauge-total" id="totalCount">/ 0 완료</div>
+      </div>
+    </div>
+
+    <div id="routineLoading" class="state-box"><div class="spinner"></div>루틴 불러오는 중...</div>
+    <div id="routineError" class="state-box hidden">루틴을 불러오지 못했어요.<br><button class="retry-btn" onclick="loadRoutines()">다시 시도</button></div>
+    <div id="routineContent" class="hidden">
+      <div id="routineEmpty" class="empty-box hidden">
+        <div class="big">✅</div>
+        아직 루틴이 없어요.<br>관리탭에서 루틴을 추가해보세요!
+      </div>
+      <div class="list" id="activeList"></div>
+      <button class="inactive-toggle" id="inactiveToggle" onclick="toggleInactive()">
+        <span id="inactiveLabel">비활성 루틴 보기</span>
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 9l6 6 6-6"/></svg>
+      </button>
+      <div class="inactive-list" id="inactiveList"></div>
+    </div>
+  </div>
+
+  <!-- ============ 관리 탭 ============ -->
+  <div class="page" id="page-manage">
+    <div class="topbar">관리</div>
+    <div class="subtab-bar">
+      <button class="subtab-btn active" id="subtab-routine" onclick="switchSubtab('routine')">루틴관리</button>
+      <button class="subtab-btn" id="subtab-calendar" onclick="switchSubtab('calendar')">일정관리</button>
+    </div>
+
+    <!-- 루틴관리 -->
+    <div class="subpage active" id="sub-routine">
+      <div class="section-title">루틴 추가</div>
+      <div class="form-row">
+        <input type="text" id="newRoutineInput" placeholder="새 루틴 이름 (예: 물 2L)">
+        <button class="btn-primary" onclick="addRoutine()">추가</button>
+      </div>
+
+      <div class="section-title">현재 루틴</div>
+      <div id="manageRoutineLoading" class="state-box" style="padding:20px 0;"><div class="spinner"></div>불러오는 중...</div>
+      <div id="manageRoutineList"></div>
+
+      <div class="section-title">완료 기록</div>
+      <div id="historyLoading" class="state-box" style="padding:20px 0;"><div class="spinner"></div>불러오는 중...</div>
+      <div id="historyEmpty" class="empty-box hidden">아직 완료 기록이 없어요.</div>
+      <div id="historyList"></div>
+    </div>
+
+    <!-- 일정관리 -->
+    <div class="subpage" id="sub-calendar">
+      <div class="section-title">일정 추가</div>
+      <div style="margin-bottom:20px;">
+        <input type="text" id="newEventTitle" placeholder="일정 제목" style="width:100%; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 14px; font-size:14px; margin-bottom:8px;">
+        <div style="display:flex; gap:8px; margin-bottom:8px;">
+          <input type="date" id="newEventDate" style="flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 10px; font-size:14px;">
+          <input type="time" id="newEventStart" style="flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 10px; font-size:14px;">
+          <input type="time" id="newEventEnd" style="flex:1; background:var(--bg-elevated); border:1px solid var(--line); color:var(--text); border-radius:10px; padding:12px 10px; font-size:14px;">
+        </div>
+        <button class="btn-primary" style="width:100%; padding:12px 0;" onclick="addEvent()">일정 추가</button>
+      </div>
+
+      <div class="section-title">다가오는 일정</div>
+      <div id="manageCalLoading" class="state-box" style="padding:20px 0;"><div class="spinner"></div>불러오는 중...</div>
+      <div id="manageCalList"></div>
+    </div>
+  </div>
+
+  <!-- ============ 하단 탭바 ============ -->
+  <div class="tabbar">
+    <button class="tab-btn active" id="tabbtn-news" onclick="switchTab('news')">
+      <span class="icon">📰</span><span>뉴스</span>
+    </button>
+    <button class="tab-btn" id="tabbtn-calendar" onclick="switchTab('calendar')">
+      <span class="icon">🗓️</span><span>일정</span>
+    </button>
+    <button class="tab-btn" id="tabbtn-routine" onclick="switchTab('routine')">
+      <span class="icon">✅</span><span>루틴</span>
+    </button>
+    <button class="tab-btn" id="tabbtn-manage" onclick="switchTab('manage')">
+      <span class="icon">⚙️</span><span>관리</span>
+    </button>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  /* ================== 공통 설정 ================== */
+  const BASE = 'https://adept-mastiff.pikapod.net/webhook';
+  const API = {
+    routines: BASE + '/routines',
+    check: BASE + '/check',
+    routineAdd: BASE + '/routine-add',
+    routineDelete: BASE + '/routine-delete',
+    news: BASE + '/news',
+    calendar: BASE + '/calendar',
+    calendarAdd: BASE + '/calendar-add',
+    calendarUpdate: BASE + '/calendar-update',
+    calendarDelete: BASE + '/calendar-delete',
+    weather: BASE + '/weather',
+    checkHistory: BASE + '/check-history'
+  };
+
+  function show(id){ document.getElementById(id).classList.remove('hidden'); }
+  function hide(id){ document.getElementById(id).classList.add('hidden'); }
+  function escapeHtml(str){
+    const div = document.createElement('div');
+    div.textContent = str == null ? '' : String(str);
+    return div.innerHTML;
+  }
+  function toast(msg){
+    const t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    setTimeout(()=> t.classList.remove('show'), 2000);
+  }
+
+  /* ================== 탭 전환 ================== */
+  let currentTab = 'news';
+  const tabLoaded = { news:false, calendar:false, routine:false, manage:false };
+
+  function switchTab(name){
+    document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('page-' + name).classList.add('active');
+    document.getElementById('tabbtn-' + name).classList.add('active');
+    currentTab = name;
+
+    if(!tabLoaded[name]){
+      tabLoaded[name] = true;
+      if(name === 'news'){ loadWeather(); loadNews(); }
+      if(name === 'calendar'){ loadCalendar(); }
+      if(name === 'routine'){ loadRoutines(); }
+      if(name === 'manage'){ loadManageRoutines(); loadHistory(); loadManageCalendar(); }
+    }
+  }
+
+  let currentSubtab = 'routine';
+  function switchSubtab(name){
+    document.querySelectorAll('.subpage').forEach(p => p.classList.remove('active'));
+    document.querySelectorAll('.subtab-btn').forEach(b => b.classList.remove('active'));
+    document.getElementById('sub-' + name).classList.add('active');
+    document.getElementById('subtab-' + name).classList.add('active');
+    currentSubtab = name;
+  }
+
+  /* ================== 날씨 ================== */
+  async function loadWeather(){
+    try{
+      const res = await fetch(API.weather);
+      const data = await res.json();
+      const w = Array.isArray(data) ? data[0] : data;
+      document.getElementById('wTemp').textContent = `${w.minTemp}° / ${w.maxTemp}°`;
+      document.getElementById('wSub').textContent = `${w.sky} · 강수확률 ${w.maxPop}%`;
+      const iconMap = { '맑음':'☀️', '구름많음':'⛅', '흐림':'☁️' };
+      document.getElementById('wIcon').textContent = iconMap[w.sky] || '🌤️';
+      hide('weatherLoading');
+      show('weatherCard');
+    }catch(e){
+      hide('weatherLoading');
+    }
+  }
+
+  /* ================== 뉴스 ================== */
+  let allNews = [];
+  let newsShown = 0;
+  const NEWS_PAGE = 6;
+
+  async function loadNews(){
+    hide('newsError'); hide('newsList'); hide('newsMoreBtn');
+    show('newsLoading');
+    try{
+      const res = await fetch(API.news);
+      const data = await res.json();
+      const wrapped = Array.isArray(data) ? data[0] : data;
+      allNews = (wrapped && wrapped.articles) ? wrapped.articles : [];
+      newsShown = 0;
+      hide('newsLoading');
+      show('newsList');
+      renderNews();
+    }catch(e){
+      hide('newsLoading');
+      show('newsError');
+    }
+  }
+
+  function renderNews(){
+    const listEl = document.getElementById('newsList');
+    const nextBatch = allNews.slice(newsShown, newsShown + NEWS_PAGE);
+    nextBatch.forEach(article => {
+      const el = document.createElement('a');
+      el.className = 'news-card';
+      el.href = article.url || '#';
+      el.target = '_blank';
+      el.rel = 'noopener';
+      const img = article.urlToImage
+        ? `<img class="news-img" src="${escapeHtml(article.urlToImage)}" onerror="this.classList.add('hidden')">`
+        : '';
+      const dateStr = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('ko-KR', {month:'numeric', day:'numeric'}) : '';
+      el.innerHTML = `
+        ${img}
+        <div class="news-body">
+          <div class="news-title">${escapeHtml(article.title)}</div>
+          <div class="news-meta">${escapeHtml(article.source?.name || '')} · ${dateStr}</div>
+        </div>
+      `;
+      listEl.appendChild(el);
+    });
+    newsShown += nextBatch.length;
+    if(newsShown < allNews.length){ show('newsMoreBtn'); } else { hide('newsMoreBtn'); }
+  }
+  function showMoreNews(){ renderNews(); }
+
+  /* ================== 일정 조회 (뷰용) ================== */
+  async function loadCalendar(){
+    hide('calError'); hide('calEmpty'); hide('calLoading');
+    show('calLoading');
+    document.getElementById('calList').innerHTML = '';
+    try{
+      const res = await fetch(API.calendar);
+      const events = await res.json();
+      hide('calLoading');
+      if(!Array.isArray(events) || events.length === 0){ show('calEmpty'); return; }
+      renderCalendarList(events, document.getElementById('calList'), false);
+    }catch(e){
+      hide('calLoading');
+      show('calError');
+    }
+  }
+
+  function renderCalendarList(events, container, editable){
+    container.innerHTML = '';
+    const days = ['일','월','화','수','목','금','토'];
+    events.forEach(ev => {
+      const start = ev.start?.dateTime || ev.start?.date;
+      const end = ev.end?.dateTime || ev.end?.date;
+      if(!start) return;
+      const d = new Date(start);
+      const wrap = document.createElement('div');
+      wrap.innerHTML = `
+        <div class="event-item">
+          <div class="event-date">
+            <div class="d">${d.getDate()}</div>
+            <div class="w">${days[d.getDay()]}</div>
+          </div>
+          <div class="event-info">
+            <div class="event-title">${escapeHtml(ev.summary || '(제목 없음)')}</div>
+            <div class="event-time">${d.toLocaleString('ko-KR', {month:'numeric', day:'numeric', hour:'2-digit', minute:'2-digit'})}</div>
+          </div>
+          ${editable ? `
+          <div>
+            <button class="btn-edit" onclick="toggleEditForm('${ev.id}')">수정</button>
+            <button class="btn-delete" onclick="deleteEvent('${ev.id}')">삭제</button>
+          </div>` : ''}
+        </div>
+        ${editable ? `
+        <div class="event-edit-form" id="edit-${ev.id}">
+          <input type="text" id="editTitle-${ev.id}" value="${escapeHtml(ev.summary || '')}" placeholder="제목">
+          <input type="date" id="editDate-${ev.id}" value="${start.substring(0,10)}">
+          <div style="display:flex; gap:8px; margin-bottom:8px;">
+            <input type="time" id="editStart-${ev.id}" value="${start.substring(11,16)}">
+            <input type="time" id="editEnd-${ev.id}" value="${(end||start).substring(11,16)}">
+          </div>
+          <div class="row-btns">
+            <button style="background:var(--amber); color:#1a1200;" onclick="saveEvent('${ev.id}')">저장</button>
+            <button style="background:var(--line); color:var(--text);" onclick="toggleEditForm('${ev.id}')">취소</button>
+          </div>
+        </div>` : ''}
+      `;
+      container.appendChild(wrap);
+    });
+  }
+
+  /* ================== 루틴 ================== */
+  let doneSet = new Set();
+  let routines = [];
+
+  async function loadRoutines(){
+    hide('routineError'); hide('routineContent');
+    show('routineLoading');
+    try{
+      const res = await fetch(API.routines);
+      const data = await res.json();
+      routines = Array.isArray(data) ? data : [];
+      renderRoutines();
+      hide('routineLoading');
+      show('routineContent');
+    }catch(e){
+      hide('routineLoading');
+      show('routineError');
+    }
+  }
+
+  function renderRoutines(){
+    const active = routines.filter(r => r['활성여부'] === 'Y');
+    const inactive = routines.filter(r => r['활성여부'] !== 'Y');
+
+    const activeList = document.getElementById('activeList');
+    activeList.innerHTML = '';
+
+    if(routines.length === 0){
+      show('routineEmpty');
+    }else{
+      hide('routineEmpty');
+    }
+
+    active.forEach(r => {
+      const name = r['루틴명'];
+      const item = document.createElement('div');
+      item.className = 'routine-item' + (doneSet.has(name) ? ' done' : '');
+      item.onclick = () => toggleDone(name, item);
+      item.innerHTML = `
+        <div class="checkbox">
+          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M5 13l4 4L19 7"/>
+          </svg>
+        </div>
+        <div class="routine-name">${escapeHtml(name)}</div>
+      `;
+      activeList.appendChild(item);
+    });
+
+    const inactiveList = document.getElementById('inactiveList');
+    inactiveList.innerHTML = '';
+    inactive.forEach(r => {
+      const el = document.createElement('div');
+      el.className = 'inactive-item';
+      el.innerHTML = `<div class="inactive-dot"></div>${escapeHtml(r['루틴명'])}`;
+      inactiveList.appendChild(el);
+    });
+    document.getElementById('inactiveLabel').textContent = `비활성 루틴 보기 (${inactive.length})`;
+
+    updateGauge(active.length);
+  }
+
+  function toggleDone(name, el){
+    const wasNotDone = !doneSet.has(name);
+    if(doneSet.has(name)){ doneSet.delete(name); el.classList.remove('done'); }
+    else{ doneSet.add(name); el.classList.add('done'); }
+    const activeCount = routines.filter(r => r['활성여부'] === 'Y').length;
+    updateGauge(activeCount);
+    if(wasNotDone){ saveCheck(name); }
+  }
+
+  function saveCheck(name){
+    fetch(API.check, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ routineName: name })
+    }).catch(err => console.error('체크 저장 실패:', err));
+  }
+
+  function updateGauge(total){
+    const done = doneSet.size;
+    document.getElementById('doneCount').textContent = done;
+    document.getElementById('totalCount').textContent = `/ ${total} 완료`;
+    const circumference = 2 * Math.PI * 65;
+    const ratio = total > 0 ? Math.min(done/total, 1) : 0;
+    document.getElementById('gaugeFg').style.strokeDashoffset = circumference * (1 - ratio);
+  }
+
+  function toggleInactive(){
+    document.getElementById('inactiveList').classList.toggle('open');
+    document.getElementById('inactiveToggle').classList.toggle('open');
+  }
+
+  /* ================== 관리: 루틴 ================== */
+  async function loadManageRoutines(){
+    show('manageRoutineLoading');
+    document.getElementById('manageRoutineList').innerHTML = '';
+    try{
+      const res = await fetch(API.routines);
+      const data = await res.json();
+      const list = Array.isArray(data) ? data : [];
+      hide('manageRoutineLoading');
+      const container = document.getElementById('manageRoutineList');
+      if(list.length === 0){
+        container.innerHTML = '<div class="empty-box">등록된 루틴이 없어요.</div>';
+        return;
+      }
+      list.forEach(r => {
+        const el = document.createElement('div');
+        el.className = 'manage-item';
+        const statusLabel = r['활성여부'] === 'Y' ? '' : ' (비활성)';
+        el.innerHTML = `
+          <div class="name">${escapeHtml(r['루틴명'])}${statusLabel}</div>
+          <button class="btn-delete" onclick="deleteRoutine('${escapeHtml(r['루틴명'])}')">삭제</button>
+        `;
+        container.appendChild(el);
+      });
+    }catch(e){
+      hide('manageRoutineLoading');
+      document.getElementById('manageRoutineList').innerHTML = '<div class="empty-box">불러오지 못했어요.</div>';
+    }
+  }
+
+  async function addRoutine(){
+    const input = document.getElementById('newRoutineInput');
+    const name = input.value.trim();
+    if(!name){ toast('루틴 이름을 입력해주세요'); return; }
+    try{
+      const res = await fetch(API.routineAdd, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ routineName: name })
+      });
+      const data = await res.json();
+      toast(data.message || '추가했어요');
+      input.value = '';
+      loadManageRoutines();
+      tabLoaded.routine = false;
+    }catch(e){ toast('추가에 실패했어요'); }
+  }
+
+  async function deleteRoutine(name){
+    try{
+      const res = await fetch(API.routineDelete, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ routineName: name })
+      });
+      const data = await res.json();
+      toast(data.message || '삭제했어요');
+      loadManageRoutines();
+      tabLoaded.routine = false;
+    }catch(e){ toast('삭제에 실패했어요'); }
+  }
+
+  /* ================== 관리: 완료 기록 ================== */
+  async function loadHistory(){
+    show('historyLoading');
+    hide('historyEmpty');
+    document.getElementById('historyList').innerHTML = '';
+    try{
+      const res = await fetch(API.checkHistory);
+      const data = await res.json();
+      const list = (Array.isArray(data) ? data : []).filter(r => r['루틴명']);
+      hide('historyLoading');
+      if(list.length === 0){ show('historyEmpty'); return; }
+
+      const grouped = {};
+      list.forEach(r => {
+        const date = r['날짜'] || '날짜 없음';
+        if(!grouped[date]) grouped[date] = [];
+        grouped[date].push(r['루틴명']);
+      });
+
+      const container = document.getElementById('historyList');
+      Object.keys(grouped).sort().reverse().forEach(date => {
+        const group = document.createElement('div');
+        group.className = 'history-group';
+        const chips = grouped[date].map(name => `<span class="history-chip">${escapeHtml(name)}</span>`).join('');
+        group.innerHTML = `<div class="history-date">${escapeHtml(date)}</div>${chips}`;
+        container.appendChild(group);
+      });
+    }catch(e){
+      hide('historyLoading');
+      document.getElementById('historyList').innerHTML = '<div class="empty-box">불러오지 못했어요.</div>';
+    }
+  }
+
+  /* ================== 관리: 일정 ================== */
+  async function loadManageCalendar(){
+    show('manageCalLoading');
+    document.getElementById('manageCalList').innerHTML = '';
+    try{
+      const res = await fetch(API.calendar);
+      const events = await res.json();
+      hide('manageCalLoading');
+      const container = document.getElementById('manageCalList');
+      if(!Array.isArray(events) || events.length === 0){
+        container.innerHTML = '<div class="empty-box">예정된 일정이 없어요.</div>';
+        return;
+      }
+      renderCalendarList(events, container, true);
+    }catch(e){
+      hide('manageCalLoading');
+      document.getElementById('manageCalList').innerHTML = '<div class="empty-box">불러오지 못했어요.</div>';
+    }
+  }
+
+  function toggleEditForm(id){
+    document.getElementById('edit-' + id).classList.toggle('open');
+  }
+
+  async function saveEvent(id){
+    const title = document.getElementById('editTitle-'+id).value.trim();
+    const date = document.getElementById('editDate-'+id).value;
+    const startT = document.getElementById('editStart-'+id).value;
+    const endT = document.getElementById('editEnd-'+id).value;
+    if(!title || !date || !startT || !endT){ toast('모든 항목을 입력해주세요'); return; }
+    const startTime = `${date}T${startT}:00+09:00`;
+    const endTime = `${date}T${endT}:00+09:00`;
+    try{
+      const res = await fetch(API.calendarUpdate, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ eventId: id, summary: title, startTime, endTime })
+      });
+      const data = await res.json();
+      toast(data.message || '수정했어요');
+      loadManageCalendar();
+      tabLoaded.calendar = false;
+    }catch(e){ toast('수정에 실패했어요'); }
+  }
+
+  async function deleteEvent(id){
+    try{
+      const res = await fetch(API.calendarDelete, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ eventId: id })
+      });
+      const data = await res.json();
+      toast(data.message || '삭제했어요');
+      loadManageCalendar();
+      tabLoaded.calendar = false;
+    }catch(e){ toast('삭제에 실패했어요'); }
+  }
+
+  async function addEvent(){
+    const title = document.getElementById('newEventTitle').value.trim();
+    const date = document.getElementById('newEventDate').value;
+    const startT = document.getElementById('newEventStart').value;
+    const endT = document.getElementById('newEventEnd').value;
+    if(!title || !date || !startT || !endT){ toast('모든 항목을 입력해주세요'); return; }
+    const startTime = `${date}T${startT}:00+09:00`;
+    const endTime = `${date}T${endT}:00+09:00`;
+    try{
+      const res = await fetch(API.calendarAdd, {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body: JSON.stringify({ summary: title, startTime, endTime })
+      });
+      const data = await res.json();
+      toast(data.message || '일정을 추가했어요');
+      document.getElementById('newEventTitle').value = '';
+      document.getElementById('newEventDate').value = '';
+      document.getElementById('newEventStart').value = '';
+      document.getElementById('newEventEnd').value = '';
+      loadManageCalendar();
+      tabLoaded.calendar = false;
+    }catch(e){ toast('추가에 실패했어요'); }
+  }
+
+  /* ================== 초기 로딩 ================== */
+  tabLoaded.news = true;
+  loadWeather();
+  loadNews();
+</script>
+</body>
+</html>
