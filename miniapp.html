@@ -452,7 +452,7 @@
   document.body.addEventListener('touchstart', (e)=>{
     if(sheetOpen) return;
     if(e.target.closest('.weather-card')) return;
-    if(e.target.closest('#calGridWrap')) return;
+    if(e.target.closest('#calGrid') || e.target.closest('.cal-weekdays') || e.target.closest('.cal-header')) return;
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
     touchActive = true;
@@ -470,14 +470,15 @@
 
   // 달력 스와이프 (이전달/다음달)
   let calSwipeStartX = 0, calSwipeStartY = 0, calSwipeActive = false;
-  const calWrap = document.getElementById('calGridWrap');
-  calWrap.addEventListener('touchstart', (e)=>{
+  // 달력 그리드 영역만 스와이프 감지 (이번 달 일정 리스트 제외)
+  const calGrid = document.getElementById('calGrid');
+  calGrid.addEventListener('touchstart', (e)=>{
     if(sheetOpen) return;
     calSwipeStartX = e.touches[0].clientX;
     calSwipeStartY = e.touches[0].clientY;
     calSwipeActive = true;
   }, {passive:true});
-  calWrap.addEventListener('touchend', (e)=>{
+  calGrid.addEventListener('touchend', (e)=>{
     if(!calSwipeActive || sheetOpen) return;
     calSwipeActive = false;
     const dx = e.changedTouches[0].clientX - calSwipeStartX;
