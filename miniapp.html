@@ -17,30 +17,18 @@
     --text-dim: #8a8a8a;
     --line: #2a2a2a;
     --red: #ff6b6b;
+    --blue: #6ba3ff;
   }
   *{box-sizing:border-box; -webkit-tap-highlight-color: transparent;}
   html,body{
-    margin:0; padding:0;
-    background:var(--bg);
-    color:var(--text);
-    font-family:'Pretendard', -apple-system, sans-serif;
-    -webkit-font-smoothing:antialiased;
+    margin:0; padding:0; background:var(--bg); color:var(--text);
+    font-family:'Pretendard', -apple-system, sans-serif; -webkit-font-smoothing:antialiased;
   }
-  body{
-    min-height:100vh;
-    max-width: 480px;
-    margin: 0 auto;
-    padding-bottom: 84px;
-  }
+  body{ min-height:100vh; max-width: 480px; margin: 0 auto; padding-bottom: 84px; overflow-x:hidden; }
   button{ font-family:inherit; }
   input, textarea{ font-family:inherit; }
 
-  .topbar{
-    padding: 18px 20px 8px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-  }
+  .topbar{ padding: 18px 20px 8px; display:flex; align-items:center; justify-content:space-between; }
   .topbar-title{ font-size: 17px; font-weight:700; }
   .topbar-actions{ display:flex; gap:8px; }
   .topbar-btn{
@@ -57,8 +45,7 @@
   }
   .tab-btn{
     flex:1; background:none; border:none; color:var(--text-dim);
-    display:flex; flex-direction:column; align-items:center; gap:2px;
-    font-size:11px; padding:8px 0 4px;
+    display:flex; flex-direction:column; align-items:center; gap:2px; font-size:11px; padding:8px 0 4px;
   }
   .tab-btn .icon{ font-size:20px; }
   .tab-btn.active{ color:var(--amber); }
@@ -72,16 +59,21 @@
   }
   .section-title:first-child{ margin-top:4px; }
 
-  /* ---- Weather card ---- */
+  /* ---- Weather swipeable card ---- */
   .weather-card{
     background: linear-gradient(135deg, rgba(255,176,32,0.12), var(--bg-elevated));
     border: 1px solid var(--line); border-radius: 16px; padding: 18px 20px;
     display:flex; align-items:center; justify-content:space-between; margin-bottom: 8px;
+    touch-action: pan-y;
   }
+  .weather-label{ font-size:12px; color:var(--amber); font-weight:700; margin-bottom:4px; }
   .weather-temp{ font-size: 28px; font-weight:700; }
   .weather-sub{ font-size: 12px; color:var(--text-dim); margin-top:4px; }
   .weather-icon{ font-size: 36px; }
-  .weather-hint{ font-size:11px; color:var(--text-dim); text-align:right; margin: 4px 4px 0; }
+  .weather-dots{ display:flex; justify-content:center; gap:6px; margin: 4px 0 2px; }
+  .weather-dot{ width:6px; height:6px; border-radius:50%; background:var(--line); }
+  .weather-dot.active{ background:var(--amber); }
+  .weather-hint{ font-size:11px; color:var(--text-dim); text-align:center; margin: 2px 0 0; }
 
   /* ---- News cards ---- */
   .news-list{ display:flex; flex-direction:column; gap:14px; }
@@ -98,7 +90,6 @@
   }
   .news-title{ font-size:15px; font-weight:600; line-height:1.4; margin-bottom:6px; }
   .news-meta{ font-size:12px; color:var(--text-dim); }
-
   .more-btn{
     width:100%; margin-top:14px; background:var(--bg-elevated); border:1px solid var(--line);
     color:var(--text); border-radius:10px; padding:12px 0; font-size:14px; font-weight:600;
@@ -116,7 +107,7 @@
     text-align:center; font-size:12px; color:var(--text-dim); margin-bottom:6px;
   }
   .cal-wd.sun{ color:var(--red); }
-  .cal-wd.sat{ color:#6ba3ff; }
+  .cal-wd.sat{ color:var(--blue); }
   .cal-grid{ display:grid; grid-template-columns: repeat(7, 1fr); gap:4px; margin-bottom:8px; }
   .cal-cell{
     aspect-ratio: 1; display:flex; flex-direction:column; align-items:center; justify-content:center;
@@ -125,19 +116,34 @@
   }
   .cal-cell.empty{ visibility:hidden; }
   .cal-cell.sun, .cal-cell.holiday{ color: var(--red); }
-  .cal-cell.sat{ color:#6ba3ff; }
+  .cal-cell.sat{ color:var(--blue); }
   .cal-cell.today{ background: var(--amber); color:#1a1200; font-weight:700; }
   .cal-cell.selected:not(.today){ border-color: var(--amber); }
   .cal-cell .dot{ width:5px; height:5px; border-radius:50%; background: var(--amber); position:absolute; bottom:5px; }
   .cal-cell.today .dot{ background:#1a1200; }
-  .selected-event-item{
+  .cal-cell .rdot{ background: var(--blue); }
+
+  /* ---- Month event list ---- */
+  .month-event-item{
     background: var(--bg-elevated); border:1px solid var(--line); border-radius:12px;
-    padding:12px 14px; margin-bottom:8px; font-size:14px;
+    padding:12px 14px; margin-bottom:8px; display:flex; gap:12px; align-items:center;
+  }
+  .month-event-date{ flex-shrink:0; width:42px; text-align:center; }
+  .month-event-date .d{ font-size:18px; font-weight:700; color:var(--amber); }
+  .month-event-date .w{ font-size:10px; color:var(--text-dim); }
+  .month-event-info{ flex:1; }
+  .month-event-title{ font-size:14px; font-weight:600; }
+  .month-event-time{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+
+  /* ---- Popup day events ---- */
+  .day-event-item{
+    background: var(--bg); border:1px solid var(--line); border-radius:12px;
+    padding:12px 14px; margin-bottom:8px;
     display:flex; align-items:center; justify-content:space-between; gap:10px;
   }
-  .selected-event-item .t{ font-weight:600; }
-  .selected-event-item .tm{ font-size:12px; color:var(--text-dim); margin-top:2px; }
-  .selected-event-item .actions{ display:flex; gap:6px; flex-shrink:0; }
+  .day-event-item .t{ font-weight:600; font-size:14px; }
+  .day-event-item .tm{ font-size:12px; color:var(--text-dim); margin-top:2px; }
+  .day-event-item .actions{ display:flex; gap:6px; flex-shrink:0; }
 
   /* ---- Routine ---- */
   .gauge-wrap{ position:relative; width:130px; height:130px; margin: 8px auto 14px; }
@@ -151,14 +157,12 @@
   .routine-item{
     display:flex; align-items:center; gap:14px;
     background: var(--bg-elevated); border: 1px solid var(--line);
-    border-radius: 14px; padding: 16px; margin-bottom:10px;
-    transition: border-color 0.2s, background 0.2s;
+    border-radius: 14px; padding: 16px; margin-bottom:10px; transition: border-color 0.2s, background 0.2s;
   }
   .routine-item.done{ border-color: var(--amber); background: linear-gradient(0deg, var(--amber-dim), var(--amber-dim)), var(--bg-elevated); }
   .checkbox{
-    flex-shrink:0; width:24px; height:24px; border-radius: 8px;
-    border: 2px solid var(--text-dim); display:flex; align-items:center; justify-content:center;
-    transition: all 0.2s;
+    flex-shrink:0; width:24px; height:24px; border-radius: 8px; border: 2px solid var(--text-dim);
+    display:flex; align-items:center; justify-content:center; transition: all 0.2s;
   }
   .routine-item.done .checkbox{ border-color: var(--amber); background: var(--amber); }
   .checkbox svg{ width:14px; height:14px; opacity:0; transition: opacity 0.15s; }
@@ -177,7 +181,7 @@
   .inactive-toggle svg{ width:12px; height:12px; transition: transform 0.2s; }
   .inactive-toggle.open svg{ transform: rotate(180deg); }
   .inactive-list{ max-height:0; overflow:hidden; transition: max-height 0.3s ease; }
-  .inactive-list.open{ max-height: 500px; }
+  .inactive-list.open{ max-height: 800px; }
   .inactive-item{
     display:flex; align-items:center; gap:14px; padding: 14px 16px; color: var(--text-dim);
     font-size:15px; border-bottom: 1px solid var(--line);
@@ -186,7 +190,6 @@
 
   .empty-box{ text-align:center; padding: 40px 20px; color: var(--text-dim); font-size:14px; }
   .empty-box .big{ font-size:32px; margin-bottom:10px; }
-
   .state-box{ text-align:center; padding: 50px 20px; color: var(--text-dim); font-size:14px; }
   .spinner{
     width:26px;height:26px; border:3px solid var(--line); border-top-color: var(--amber);
@@ -199,12 +202,13 @@
   }
   .hidden{ display:none !important; }
 
-  .history-group{ margin-bottom: 18px; }
-  .history-date{ font-size:13px; color:var(--text-dim); margin-bottom:8px; font-weight:600; }
-  .history-chip{
-    display:inline-block; background:var(--bg-elevated); border:1px solid var(--line);
-    border-radius:20px; padding:6px 12px; font-size:12px; margin:0 6px 6px 0;
+  /* ---- History chips ---- */
+  .chip-row{ display:flex; flex-wrap:wrap; gap:8px; }
+  .routine-chip{
+    background:var(--bg); border:1px solid var(--line); color:var(--text);
+    border-radius:20px; padding:9px 16px; font-size:14px; font-weight:600;
   }
+  .routine-chip.active{ background:var(--amber); color:#1a1200; border-color:var(--amber); }
 
   /* ---- Bottom sheet ---- */
   .sheet-overlay{
@@ -217,7 +221,7 @@
     background:var(--bg-elevated); border-radius:20px 20px 0 0;
     padding: 10px 20px calc(24px + env(safe-area-inset-bottom));
     transform: translateY(100%); transition: transform 0.28s cubic-bezier(.32,.72,0,1);
-    z-index:301; max-height:80vh; overflow-y:auto;
+    z-index:301; max-height:82vh; overflow-y:auto;
   }
   .sheet.open{ transform: translateY(0); }
   .sheet-handle{ width:36px; height:4px; background:var(--line); border-radius:2px; margin:0 auto 16px; }
@@ -234,6 +238,7 @@
   }
   .sheet-btn.secondary{ background:var(--line); color:var(--text); margin-top:8px; }
   .sheet-btn.danger{ background:none; border:1px solid var(--red); color:var(--red); margin-top:8px; }
+  .sheet-back{ background:none; border:none; color:var(--amber); font-size:14px; font-weight:600; padding:0; margin-bottom:12px; }
 
   .hourly-row{
     display:flex; align-items:center; justify-content:space-between;
@@ -261,14 +266,16 @@
     <div class="topbar"><div class="topbar-title">오늘</div></div>
 
     <div id="weatherLoading" class="state-box" style="padding:24px 0;"><div class="spinner"></div>날씨 불러오는 중...</div>
-    <div id="weatherCard" class="weather-card hidden" onclick="openWeatherDetail()">
+    <div id="weatherCard" class="weather-card hidden" onclick="onWeatherTap()">
       <div>
+        <div class="weather-label" id="wLabel">오늘</div>
         <div class="weather-temp" id="wTemp">-</div>
         <div class="weather-sub" id="wSub">-</div>
       </div>
       <div class="weather-icon" id="wIcon">☁️</div>
     </div>
-    <div class="weather-hint hidden" id="weatherHint">탭하면 시간대별 날씨 →</div>
+    <div class="weather-dots hidden" id="weatherDots"></div>
+    <div class="weather-hint hidden" id="weatherHint">← 넘겨서 내일·모레 · 탭하면 시간대별</div>
 
     <div class="section-title">오늘의 뉴스</div>
     <div id="newsLoading" class="state-box"><div class="spinner"></div>뉴스 불러오는 중...</div>
@@ -299,8 +306,8 @@
         <div class="cal-wd">수</div><div class="cal-wd">목</div><div class="cal-wd">금</div><div class="cal-wd sat">토</div>
       </div>
       <div class="cal-grid" id="calGrid"></div>
-      <div class="section-title">선택한 날의 일정</div>
-      <div id="selectedDayEvents"></div>
+      <div class="section-title" id="monthEventsTitle">이번 달 일정</div>
+      <div id="monthEvents"></div>
     </div>
     <div id="calError" class="state-box hidden">일정을 불러오지 못했어요.<br><button class="retry-btn" onclick="loadCalendar()">다시 시도</button></div>
   </div>
@@ -368,13 +375,14 @@
   <div class="toast" id="toast"></div>
 
 <script>
-  /* ================== 공통 설정 ================== */
+  /* ================== 공통 ================== */
   const BASE = 'https://adept-mastiff.pikapod.net/webhook';
   const API = {
     routines: BASE + '/routines',
     check: BASE + '/check',
     routineAdd: BASE + '/routine-add',
     routineDelete: BASE + '/routine-delete',
+    routineDeletePermanent: BASE + '/routine-delete-permanent',
     news: BASE + '/news',
     calendar: BASE + '/calendar',
     calendarAdd: BASE + '/calendar-add',
@@ -384,6 +392,7 @@
     checkHistory: BASE + '/check-history',
     holidays: BASE + '/holidays'
   };
+  const WEEKDAYS = ['일','월','화','수','목','금','토'];
 
   function show(id){ document.getElementById(id).classList.remove('hidden'); }
   function hide(id){ document.getElementById(id).classList.add('hidden'); }
@@ -394,23 +403,33 @@
   }
   function toast(msg){
     const t = document.getElementById('toast');
-    t.textContent = msg;
-    t.classList.add('show');
+    t.textContent = msg; t.classList.add('show');
     setTimeout(()=> t.classList.remove('show'), 2000);
   }
+  function dateKey(d){
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
+  }
+  // onclick="fn('...')" 인자로 안전하게 넣기 위한 이스케이프
+  function jsArg(str){
+    return String(str == null ? '' : str).replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/"/g,'&quot;');
+  }
 
-  /* ================== 바텀시트 공통 ================== */
+  /* ================== 바텀시트 ================== */
+  let sheetOpen = false;
   function openSheet(html){
     document.getElementById('sheetContent').innerHTML = html;
     document.getElementById('sheetOverlay').classList.add('open');
     document.getElementById('sheet').classList.add('open');
+    sheetOpen = true;
   }
   function closeSheet(){
     document.getElementById('sheetOverlay').classList.remove('open');
     document.getElementById('sheet').classList.remove('open');
+    sheetOpen = false;
   }
 
   /* ================== 탭 전환 ================== */
+  const TAB_ORDER = ['news','calendar','routine','manage'];
   let currentTab = 'news';
   const tabLoaded = { news:false, calendar:false, routine:false, manage:true };
 
@@ -420,7 +439,6 @@
     document.getElementById('page-' + name).classList.add('active');
     document.getElementById('tabbtn-' + name).classList.add('active');
     currentTab = name;
-
     if(!tabLoaded[name]){
       tabLoaded[name] = true;
       if(name === 'news'){ loadWeather(); loadNews(); }
@@ -429,44 +447,91 @@
     }
   }
 
-  /* ================== 날씨 ================== */
-  let weatherData = null;
+  /* ================== 스와이프 (탭 전환) ================== */
+  let touchStartX = 0, touchStartY = 0, touchActive = false;
+  document.body.addEventListener('touchstart', (e)=>{
+    if(sheetOpen) return;
+    if(e.target.closest('.weather-card')) return; // 날씨카드 자체 스와이프는 별도 처리
+    touchStartX = e.touches[0].clientX;
+    touchStartY = e.touches[0].clientY;
+    touchActive = true;
+  }, {passive:true});
+  document.body.addEventListener('touchend', (e)=>{
+    if(!touchActive || sheetOpen) return;
+    touchActive = false;
+    const dx = e.changedTouches[0].clientX - touchStartX;
+    const dy = e.changedTouches[0].clientY - touchStartY;
+    if(Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return; // 가로 스와이프만
+    const idx = TAB_ORDER.indexOf(currentTab);
+    if(dx < 0 && idx < TAB_ORDER.length-1) switchTab(TAB_ORDER[idx+1]);
+    if(dx > 0 && idx > 0) switchTab(TAB_ORDER[idx-1]);
+  }, {passive:true});
+
+  /* ================== 날씨 (3일 스와이프) ================== */
+  let weatherDays = [];
+  let weatherIdx = 0;
 
   async function loadWeather(){
     try{
       const res = await fetch(API.weather);
       const data = await res.json();
-      const w = Array.isArray(data) ? data[0] : data;
-      weatherData = w;
-      document.getElementById('wTemp').textContent = `${w.minTemp}° / ${w.maxTemp}°`;
-      document.getElementById('wSub').textContent = `${w.sky} · 강수확률 ${w.maxPop}%`;
-      const iconMap = { '맑음':'☀️', '구름많음':'⛅', '흐림':'☁️' };
-      document.getElementById('wIcon').textContent = iconMap[w.sky] || '🌤️';
+      const wrapped = Array.isArray(data) ? data[0] : data;
+      weatherDays = (wrapped && wrapped.days) ? wrapped.days : [];
+      weatherIdx = 0;
       hide('weatherLoading');
-      show('weatherCard');
-      show('weatherHint');
-    }catch(e){
-      hide('weatherLoading');
-    }
+      if(weatherDays.length === 0) return;
+      show('weatherCard'); show('weatherDots'); show('weatherHint');
+      renderWeatherCard();
+      renderWeatherDots();
+    }catch(e){ hide('weatherLoading'); }
   }
 
+  function renderWeatherCard(){
+    const w = weatherDays[weatherIdx];
+    if(!w) return;
+    document.getElementById('wLabel').textContent = w.label;
+    document.getElementById('wTemp').textContent = `${w.minTemp}° / ${w.maxTemp}°`;
+    document.getElementById('wSub').textContent = `${w.sky} · 강수확률 ${w.maxPop}%`;
+    const iconMap = { '맑음':'☀️', '구름많음':'⛅', '흐림':'☁️' };
+    document.getElementById('wIcon').textContent = iconMap[w.sky] || '🌤️';
+  }
+  function renderWeatherDots(){
+    const el = document.getElementById('weatherDots');
+    el.innerHTML = weatherDays.map((_,i)=>`<div class="weather-dot ${i===weatherIdx?'active':''}"></div>`).join('');
+  }
+
+  // 날씨 카드 자체 스와이프
+  let wStartX = 0, wActive = false;
+  const wCard = document.getElementById('weatherCard');
+  wCard.addEventListener('touchstart', (e)=>{ wStartX = e.touches[0].clientX; wActive = true; }, {passive:true});
+  wCard.addEventListener('touchend', (e)=>{
+    if(!wActive) return; wActive = false;
+    const dx = e.changedTouches[0].clientX - wStartX;
+    if(Math.abs(dx) < 40) return;
+    if(dx < 0 && weatherIdx < weatherDays.length-1){ weatherIdx++; renderWeatherCard(); renderWeatherDots(); wCard.dataset.swiped='1'; }
+    if(dx > 0 && weatherIdx > 0){ weatherIdx--; renderWeatherCard(); renderWeatherDots(); wCard.dataset.swiped='1'; }
+  }, {passive:true});
+
+  function onWeatherTap(){
+    if(wCard.dataset.swiped === '1'){ wCard.dataset.swiped=''; return; } // 스와이프 직후 탭 무시
+    openWeatherDetail();
+  }
   function openWeatherDetail(){
-    if(!weatherData || !weatherData.hourly){ toast('날씨 상세 정보가 없어요'); return; }
+    const w = weatherDays[weatherIdx];
+    if(!w || !w.hourly){ toast('상세 정보가 없어요'); return; }
     const skyIcon = { '맑음':'☀️', '구름많음':'⛅', '흐림':'☁️' };
-    const rows = weatherData.hourly.map(h => {
+    const rows = w.hourly.map(h => {
       const hh = h.time ? h.time.substring(0,2) + '시' : '-';
-      return `
-        <div class="hourly-row">
-          <div class="hourly-time">${hh}</div>
-          <div class="hourly-temp">${h.temp}°</div>
-          <div class="hourly-sky">${skyIcon[h.sky] || ''} ${h.sky || ''}</div>
-          <div class="hourly-pop">💧${h.pop}%</div>
-        </div>
-      `;
+      return `<div class="hourly-row">
+        <div class="hourly-time">${hh}</div>
+        <div class="hourly-temp">${h.temp}°</div>
+        <div class="hourly-sky">${skyIcon[h.sky] || ''} ${h.sky || ''}</div>
+        <div class="hourly-pop">💧${h.pop}%</div>
+      </div>`;
     }).join('');
     openSheet(`
-      <h3>오늘 시간대별 날씨</h3>
-      <div style="max-height:50vh; overflow-y:auto;">${rows}</div>
+      <h3>${w.label} 시간대별 날씨</h3>
+      <div style="max-height:55vh; overflow-y:auto;">${rows}</div>
       <button class="sheet-btn secondary" onclick="closeSheet()">닫기</button>
     `);
   }
@@ -485,49 +550,33 @@
       const wrapped = Array.isArray(data) ? data[0] : data;
       allNews = (wrapped && wrapped.articles) ? wrapped.articles : [];
       newsExpanded = false;
-      hide('newsLoading');
-      show('newsList');
+      hide('newsLoading'); show('newsList');
       renderNews();
-    }catch(e){
-      hide('newsLoading');
-      show('newsError');
-    }
+    }catch(e){ hide('newsLoading'); show('newsError'); }
   }
 
   function renderNews(){
     const listEl = document.getElementById('newsList');
     listEl.innerHTML = '';
     const visible = newsExpanded ? allNews : allNews.slice(0, NEWS_COLLAPSED);
-
     visible.forEach(article => {
       const el = document.createElement('a');
       el.className = 'news-card';
-      el.href = article.url || '#';
-      el.target = '_blank';
-      el.rel = 'noopener';
+      el.href = article.url || '#'; el.target = '_blank'; el.rel = 'noopener';
       const img = article.urlToImage
-        ? `<img class="news-img" src="${escapeHtml(article.urlToImage)}" onerror="this.classList.add('hidden')">`
-        : '';
+        ? `<img class="news-img" src="${escapeHtml(article.urlToImage)}" onerror="this.classList.add('hidden')">` : '';
       const dateStr = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('ko-KR', {month:'numeric', day:'numeric'}) : '';
       const catBadge = article.category ? `<div class="news-cat">${escapeHtml(article.category)}</div>` : '';
-      el.innerHTML = `
-        ${img}
-        <div class="news-body">
-          ${catBadge}
-          <div class="news-title">${escapeHtml(article.title)}</div>
-          <div class="news-meta">${escapeHtml(article.source?.name || '')} · ${dateStr}</div>
-        </div>
-      `;
+      el.innerHTML = `${img}<div class="news-body">${catBadge}
+        <div class="news-title">${escapeHtml(article.title)}</div>
+        <div class="news-meta">${escapeHtml(article.source?.name || '')} · ${dateStr}</div></div>`;
       listEl.appendChild(el);
     });
-
     const moreBtn = document.getElementById('newsMoreBtn');
     if(allNews.length > NEWS_COLLAPSED){
       moreBtn.textContent = newsExpanded ? '접기' : '더보기';
       show('newsMoreBtn');
-    }else{
-      hide('newsMoreBtn');
-    }
+    }else{ hide('newsMoreBtn'); }
   }
   function toggleNewsExpand(){ newsExpanded = !newsExpanded; renderNews(); }
 
@@ -536,21 +585,13 @@
   let eventsByDate = {};
   let holidayMap = {};
   let calViewYear, calViewMonth;
-  let selectedDateStr = null;
-
-  function dateKey(d){
-    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;
-  }
 
   async function loadCalendar(){
     hide('calError'); hide('calGridWrap');
     show('calGridLoading');
-
     const today = new Date();
     calViewYear = today.getFullYear();
     calViewMonth = today.getMonth();
-    selectedDateStr = dateKey(today);
-
     try{
       const [evRes, holRes] = await Promise.all([
         fetch(API.calendar),
@@ -577,20 +618,15 @@
           const list = Array.isArray(items) ? items : (items ? [items] : []);
           list.forEach(h => {
             const s = String(h.locdate);
-            const key = `${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}`;
-            holidayMap[key] = h.dateName;
+            holidayMap[`${s.substring(0,4)}-${s.substring(4,6)}-${s.substring(6,8)}`] = h.dateName;
           });
         }catch(e){}
       }
 
-      hide('calGridLoading');
-      show('calGridWrap');
+      hide('calGridLoading'); show('calGridWrap');
       renderCalGrid();
-      renderSelectedDayEvents();
-    }catch(e){
-      hide('calGridLoading');
-      show('calError');
-    }
+      renderMonthEvents();
+    }catch(e){ hide('calGridLoading'); show('calError'); }
   }
 
   function changeMonth(delta){
@@ -598,15 +634,14 @@
     if(calViewMonth < 0){ calViewMonth = 11; calViewYear--; }
     if(calViewMonth > 11){ calViewMonth = 0; calViewYear++; }
     renderCalGrid();
+    renderMonthEvents();
   }
 
   function renderCalGrid(){
     document.getElementById('calMonthLabel').textContent = `${calViewYear}년 ${calViewMonth+1}월`;
     const gridEl = document.getElementById('calGrid');
     gridEl.innerHTML = '';
-
-    const firstDay = new Date(calViewYear, calViewMonth, 1);
-    const startWeekday = firstDay.getDay();
+    const startWeekday = new Date(calViewYear, calViewMonth, 1).getDay();
     const daysInMonth = new Date(calViewYear, calViewMonth+1, 0).getDate();
     const todayKey = dateKey(new Date());
 
@@ -615,7 +650,6 @@
       empty.className = 'cal-cell empty';
       gridEl.appendChild(empty);
     }
-
     for(let day=1; day<=daysInMonth; day++){
       const d = new Date(calViewYear, calViewMonth, day);
       const key = dateKey(d);
@@ -626,9 +660,8 @@
       if(weekday === 6) cls += ' sat';
       if(holidayMap[key]) cls += ' holiday';
       if(key === todayKey) cls += ' today';
-      if(key === selectedDateStr) cls += ' selected';
       cell.className = cls;
-      cell.onclick = () => selectDay(key);
+      cell.onclick = () => openDayEventsSheet(key);
       const hasEvent = eventsByDate[key] && eventsByDate[key].length > 0;
       cell.innerHTML = `${day}${hasEvent ? '<div class="dot"></div>' : ''}`;
       if(holidayMap[key]) cell.title = holidayMap[key];
@@ -636,55 +669,83 @@
     }
   }
 
-  function selectDay(key){
-    selectedDateStr = key;
-    renderCalGrid();
-    renderSelectedDayEvents();
-  }
-
-  function renderSelectedDayEvents(){
-    const container = document.getElementById('selectedDayEvents');
+  // 이번 달 전체 일정 리스트
+  function renderMonthEvents(){
+    const container = document.getElementById('monthEvents');
+    document.getElementById('monthEventsTitle').textContent = `${calViewMonth+1}월 일정`;
     container.innerHTML = '';
-    const events = eventsByDate[selectedDateStr] || [];
-    const holidayName = holidayMap[selectedDateStr];
-
-    if(holidayName){
-      const h = document.createElement('div');
-      h.className = 'selected-event-item';
-      h.innerHTML = `<div class="t" style="color:var(--red);">🔴 ${escapeHtml(holidayName)}</div>`;
-      container.appendChild(h);
-    }
-
-    if(events.length === 0 && !holidayName){
-      container.innerHTML += `<div class="empty-box" style="padding:20px 0;">이 날은 일정이 없어요.</div>`;
+    const prefix = `${calViewYear}-${String(calViewMonth+1).padStart(2,'0')}`;
+    const monthEventList = [];
+    calendarEvents.forEach(ev => {
+      const start = ev.start?.dateTime || ev.start?.date;
+      if(start && start.startsWith(prefix)) monthEventList.push(ev);
+    });
+    monthEventList.sort((a,b)=>{
+      const sa = a.start?.dateTime || a.start?.date;
+      const sb = b.start?.dateTime || b.start?.date;
+      return new Date(sa) - new Date(sb);
+    });
+    if(monthEventList.length === 0){
+      container.innerHTML = `<div class="empty-box" style="padding:24px 0;">이번 달 일정이 없어요.<br>"+추가"로 만들어보세요.</div>`;
       return;
     }
-
-    events.forEach(ev => {
+    monthEventList.forEach(ev => {
       const start = ev.start?.dateTime || ev.start?.date;
       const d = new Date(start);
       const timeStr = ev.start?.dateTime
-        ? d.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'})
-        : '종일';
+        ? d.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}) : '종일';
       const el = document.createElement('div');
-      el.className = 'selected-event-item';
+      el.className = 'month-event-item';
+      el.onclick = () => openDayEventsSheet(start.substring(0,10));
       el.innerHTML = `
-        <div>
-          <div class="t">${escapeHtml(ev.summary || '(제목 없음)')}</div>
-          <div class="tm">${timeStr}</div>
+        <div class="month-event-date">
+          <div class="d">${d.getDate()}</div>
+          <div class="w">${WEEKDAYS[d.getDay()]}</div>
         </div>
-        <div class="actions">
-          <button class="routine-del-btn" style="border-color:var(--text-dim); color:var(--text-dim);" onclick="openEditEventSheet('${ev.id}')">수정</button>
-          <button class="routine-del-btn" onclick="confirmDeleteEvent('${ev.id}')">삭제</button>
-        </div>
-      `;
+        <div class="month-event-info">
+          <div class="month-event-title">${escapeHtml(ev.summary || '(제목 없음)')}</div>
+          <div class="month-event-time">${timeStr}</div>
+        </div>`;
       container.appendChild(el);
     });
   }
 
-  /* ---- 일정 추가/수정/삭제 시트 ---- */
-  function openAddEventSheet(){
-    const defaultDate = selectedDateStr || dateKey(new Date());
+  // 날짜 탭 → 그 날 일정 팝업
+  function openDayEventsSheet(key){
+    const events = eventsByDate[key] || [];
+    const holidayName = holidayMap[key];
+    const [y,m,dd] = key.split('-');
+    const d = new Date(parseInt(y), parseInt(m)-1, parseInt(dd));
+    const dateLabel = `${parseInt(m)}월 ${parseInt(dd)}일 (${WEEKDAYS[d.getDay()]})`;
+
+    let body = '';
+    if(holidayName){
+      body += `<div class="day-event-item"><div><div class="t" style="color:var(--red);">🔴 ${escapeHtml(holidayName)}</div></div></div>`;
+    }
+    if(events.length === 0 && !holidayName){
+      body += `<div class="empty-box" style="padding:20px 0;">이 날은 일정이 없어요.</div>`;
+    }
+    events.forEach(ev => {
+      const start = ev.start?.dateTime || ev.start?.date;
+      const dt = new Date(start);
+      const timeStr = ev.start?.dateTime ? dt.toLocaleTimeString('ko-KR', {hour:'2-digit', minute:'2-digit'}) : '종일';
+      body += `<div class="day-event-item">
+        <div><div class="t">${escapeHtml(ev.summary || '(제목 없음)')}</div><div class="tm">${timeStr}</div></div>
+        <div class="actions">
+          <button class="routine-del-btn" style="border-color:var(--text-dim); color:var(--text-dim);" onclick="openEditEventSheet('${ev.id}','${key}')">수정</button>
+          <button class="routine-del-btn" onclick="confirmDeleteEvent('${ev.id}')">삭제</button>
+        </div></div>`;
+    });
+    openSheet(`
+      <h3>${dateLabel}</h3>
+      ${body}
+      <button class="sheet-btn" onclick="openAddEventSheet('${key}')">이 날에 일정 추가</button>
+      <button class="sheet-btn secondary" onclick="closeSheet()">닫기</button>
+    `);
+  }
+
+  function openAddEventSheet(presetDate){
+    const defaultDate = (typeof presetDate === 'string') ? presetDate : dateKey(new Date());
     openSheet(`
       <h3>일정 추가</h3>
       <input class="sheet-input" id="sh_title" placeholder="일정 제목">
@@ -697,30 +758,26 @@
       <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
     `);
   }
-
   async function submitAddEvent(){
     const title = document.getElementById('sh_title').value.trim();
     const date = document.getElementById('sh_date').value;
     const startT = document.getElementById('sh_start').value;
     const endT = document.getElementById('sh_end').value;
     if(!title || !date || !startT || !endT){ toast('모든 항목을 입력해주세요'); return; }
-    const startTime = `${date}T${startT}:00+09:00`;
-    const endTime = `${date}T${endT}:00+09:00`;
     try{
       const res = await fetch(API.calendarAdd, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ summary: title, startTime, endTime })
+        body: JSON.stringify({ summary: title, startTime: `${date}T${startT}:00+09:00`, endTime: `${date}T${endT}:00+09:00` })
       });
       const data = await res.json();
       toast(data.message || '일정을 추가했어요');
       closeSheet();
-      tabLoaded.calendar = false;
       loadCalendar();
     }catch(e){ toast('추가에 실패했어요'); }
   }
 
-  function openEditEventSheet(id){
-    const events = eventsByDate[selectedDateStr] || [];
+  function openEditEventSheet(id, key){
+    const events = eventsByDate[key] || [];
     const ev = events.find(e => e.id === id);
     if(!ev) return;
     const start = ev.start?.dateTime || ev.start?.date;
@@ -737,28 +794,23 @@
       <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
     `);
   }
-
   async function submitEditEvent(id){
     const title = document.getElementById('sh_title').value.trim();
     const date = document.getElementById('sh_date').value;
     const startT = document.getElementById('sh_start').value;
     const endT = document.getElementById('sh_end').value;
     if(!title || !date || !startT || !endT){ toast('모든 항목을 입력해주세요'); return; }
-    const startTime = `${date}T${startT}:00+09:00`;
-    const endTime = `${date}T${endT}:00+09:00`;
     try{
       const res = await fetch(API.calendarUpdate, {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ eventId: id, summary: title, startTime, endTime })
+        body: JSON.stringify({ eventId: id, summary: title, startTime: `${date}T${startT}:00+09:00`, endTime: `${date}T${endT}:00+09:00` })
       });
       const data = await res.json();
       toast(data.message || '수정했어요');
       closeSheet();
-      tabLoaded.calendar = false;
       loadCalendar();
     }catch(e){ toast('수정에 실패했어요'); }
   }
-
   function confirmDeleteEvent(id){
     openSheet(`
       <h3>이 일정을 삭제할까요?</h3>
@@ -766,7 +818,6 @@
       <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
     `);
   }
-
   async function submitDeleteEvent(id){
     try{
       const res = await fetch(API.calendarDelete, {
@@ -776,7 +827,6 @@
       const data = await res.json();
       toast(data.message || '삭제했어요');
       closeSheet();
-      tabLoaded.calendar = false;
       loadCalendar();
     }catch(e){ toast('삭제에 실패했어요'); }
   }
@@ -794,65 +844,49 @@
       const data = await res.json();
       routines = Array.isArray(data) ? data : [];
       renderRoutines();
-      hide('routineLoading');
-      show('routineContent');
-    }catch(e){
-      hide('routineLoading');
-      show('routineError');
-    }
+      hide('routineLoading'); show('routineContent');
+    }catch(e){ hide('routineLoading'); show('routineError'); }
   }
 
   function toggleEditMode(){
     editMode = !editMode;
-    document.getElementById('editModeBtn').classList.toggle('active', editMode);
-    document.getElementById('editModeBtn').textContent = editMode ? '완료' : '편집';
+    const btn = document.getElementById('editModeBtn');
+    btn.classList.toggle('active', editMode);
+    btn.textContent = editMode ? '완료' : '편집';
     renderRoutines();
   }
 
   function renderRoutines(){
     const active = routines.filter(r => r['활성여부'] === 'Y');
     const inactive = routines.filter(r => r['활성여부'] !== 'Y');
-
     const activeList = document.getElementById('activeList');
     activeList.innerHTML = '';
-
     if(routines.length === 0){ show('routineEmpty'); } else { hide('routineEmpty'); }
 
     active.forEach(r => {
       const name = r['루틴명'];
       const item = document.createElement('div');
       item.className = 'routine-item' + (doneSet.has(name) ? ' done' : '');
-      if(!editMode){
-        item.onclick = () => toggleDone(name, item);
-      }
+      if(!editMode) item.onclick = () => toggleDone(name, item);
       const delBtn = editMode
-        ? `<button class="routine-del-btn" onclick="event.stopPropagation(); confirmDeleteRoutine('${escapeHtml(name)}')">삭제</button>`
-        : '';
+        ? `<button class="routine-del-btn" onclick="event.stopPropagation(); confirmDeactivateRoutine('${jsArg(name)}')">비활성</button>` : '';
       item.innerHTML = `
-        <div class="checkbox">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#1a1200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round">
-            <path d="M5 13l4 4L19 7"/>
-          </svg>
-        </div>
-        <div class="routine-name">${escapeHtml(name)}</div>
-        ${delBtn}
-      `;
+        <div class="checkbox"><svg viewBox="0 0 24 24" fill="none" stroke="#1a1200" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 13l4 4L19 7"/></svg></div>
+        <div class="routine-name">${escapeHtml(name)}</div>${delBtn}`;
       activeList.appendChild(item);
     });
 
     const inactiveList = document.getElementById('inactiveList');
     inactiveList.innerHTML = '';
     inactive.forEach(r => {
+      const name = r['루틴명'];
       const el = document.createElement('div');
       el.className = 'inactive-item';
-      const delBtn = editMode
-        ? `<button class="routine-del-btn" onclick="confirmDeleteRoutine('${escapeHtml(r['루틴명'])}')" style="margin-left:auto;">삭제</button>`
-        : '';
-      el.innerHTML = `<div class="inactive-dot"></div>${escapeHtml(r['루틴명'])}${delBtn}`;
+      const delBtn = `<button class="routine-del-btn" onclick="confirmDeleteRoutinePermanent('${jsArg(name)}')" style="margin-left:auto;">삭제</button>`;
+      el.innerHTML = `<div class="inactive-dot"></div>${escapeHtml(name)}${delBtn}`;
       inactiveList.appendChild(el);
     });
     document.getElementById('inactiveLabel').textContent = `비활성 루틴 보기 (${inactive.length})`;
-
     updateGauge(active.length);
   }
 
@@ -860,18 +894,13 @@
     const wasNotDone = !doneSet.has(name);
     if(doneSet.has(name)){ doneSet.delete(name); el.classList.remove('done'); }
     else{ doneSet.add(name); el.classList.add('done'); }
-    const activeCount = routines.filter(r => r['활성여부'] === 'Y').length;
-    updateGauge(activeCount);
+    updateGauge(routines.filter(r => r['활성여부'] === 'Y').length);
     if(wasNotDone){ saveCheck(name); }
   }
-
   function saveCheck(name){
-    fetch(API.check, {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ routineName: name })
-    }).catch(err => console.error('체크 저장 실패:', err));
+    fetch(API.check, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ routineName: name }) })
+      .catch(err => console.error('체크 저장 실패:', err));
   }
-
   function updateGauge(total){
     const done = doneSet.size;
     document.getElementById('doneCount').textContent = done;
@@ -880,13 +909,11 @@
     const ratio = total > 0 ? Math.min(done/total, 1) : 0;
     document.getElementById('gaugeFg').style.strokeDashoffset = circumference * (1 - ratio);
   }
-
   function toggleInactive(){
     document.getElementById('inactiveList').classList.toggle('open');
     document.getElementById('inactiveToggle').classList.toggle('open');
   }
 
-  /* ---- 루틴 추가/삭제 시트 ---- */
   function openAddRoutineSheet(){
     openSheet(`
       <h3>루틴 추가</h3>
@@ -895,73 +922,139 @@
       <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
     `);
   }
-
   async function submitAddRoutine(){
     const name = document.getElementById('sh_routine_name').value.trim();
     if(!name){ toast('루틴 이름을 입력해주세요'); return; }
     try{
-      const res = await fetch(API.routineAdd, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ routineName: name })
-      });
+      const res = await fetch(API.routineAdd, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ routineName: name }) });
       const data = await res.json();
       toast(data.message || '추가했어요');
-      closeSheet();
-      loadRoutines();
+      closeSheet(); loadRoutines();
     }catch(e){ toast('추가에 실패했어요'); }
   }
 
-  function confirmDeleteRoutine(name){
+  // 활성 → 비활성
+  function confirmDeactivateRoutine(name){
     openSheet(`
-      <h3>"${escapeHtml(name)}" 삭제할까요?</h3>
-      <button class="sheet-btn danger" onclick="submitDeleteRoutine('${escapeHtml(name)}')">삭제하기</button>
+      <h3>"${escapeHtml(name)}" 숨길까요?</h3>
+      <p style="color:var(--text-dim); font-size:13px; margin:-6px 0 12px;">비활성 목록으로 이동해요. 기록은 그대로 남아요.</p>
+      <button class="sheet-btn danger" onclick="submitDeactivateRoutine('${jsArg(name)}')">숨기기</button>
       <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
     `);
   }
-
-  async function submitDeleteRoutine(name){
+  async function submitDeactivateRoutine(name){
     try{
-      const res = await fetch(API.routineDelete, {
-        method:'POST', headers:{'Content-Type':'application/json'},
-        body: JSON.stringify({ routineName: name })
-      });
+      const res = await fetch(API.routineDelete, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ routineName: name }) });
+      const data = await res.json();
+      toast(data.message || '숨겼어요');
+      closeSheet(); loadRoutines();
+    }catch(e){ toast('처리에 실패했어요'); }
+  }
+
+  // 비활성 → 영구삭제
+  function confirmDeleteRoutinePermanent(name){
+    openSheet(`
+      <h3>"${escapeHtml(name)}" 완전히 삭제할까요?</h3>
+      <p style="color:var(--text-dim); font-size:13px; margin:-6px 0 12px;">목록에서 영구적으로 사라져요.</p>
+      <button class="sheet-btn danger" onclick="submitDeleteRoutinePermanent('${jsArg(name)}')">영구 삭제</button>
+      <button class="sheet-btn secondary" onclick="closeSheet()">취소</button>
+    `);
+  }
+  async function submitDeleteRoutinePermanent(name){
+    try{
+      const res = await fetch(API.routineDeletePermanent, { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ routineName: name }) });
       const data = await res.json();
       toast(data.message || '삭제했어요');
-      closeSheet();
-      loadRoutines();
+      closeSheet(); loadRoutines();
     }catch(e){ toast('삭제에 실패했어요'); }
   }
 
-  /* ---- 완료 기록 시트 ---- */
+  /* ---- 완료 기록: 칩 목록 → 달력 ---- */
+  let historyRecords = [];
+
   async function openHistorySheet(){
     openSheet(`<h3>완료 기록</h3><div id="sh_history_body"><div class="state-box" style="padding:20px 0;"><div class="spinner"></div>불러오는 중...</div></div>`);
     try{
       const res = await fetch(API.checkHistory);
       const data = await res.json();
-      const list = (Array.isArray(data) ? data : []).filter(r => r['루틴명']);
-      const bodyEl = document.getElementById('sh_history_body');
-      if(!bodyEl) return;
-      if(list.length === 0){
-        bodyEl.innerHTML = `<div class="empty-box" style="padding:20px 0;">아직 완료 기록이 없어요.</div>`;
-        return;
-      }
-      const grouped = {};
-      list.forEach(r => {
-        const date = r['날짜'] || '날짜 없음';
-        if(!grouped[date]) grouped[date] = [];
-        grouped[date].push(r['루틴명']);
-      });
-      let html = '<div style="max-height:55vh; overflow-y:auto;">';
-      Object.keys(grouped).sort().reverse().forEach(date => {
-        const chips = grouped[date].map(name => `<span class="history-chip">${escapeHtml(name)}</span>`).join('');
-        html += `<div class="history-group"><div class="history-date">${escapeHtml(date)}</div>${chips}</div>`;
-      });
-      html += '</div><button class="sheet-btn secondary" onclick="closeSheet()">닫기</button>';
-      bodyEl.parentElement.innerHTML = `<h3>완료 기록</h3>` + html;
+      historyRecords = (Array.isArray(data) ? data : []).filter(r => r['루틴명'] && r['날짜']);
+      renderHistoryChips();
     }catch(e){
-      const bodyEl = document.getElementById('sh_history_body');
-      if(bodyEl) bodyEl.innerHTML = `<div class="empty-box" style="padding:20px 0;">불러오지 못했어요.</div>`;
+      const b = document.getElementById('sh_history_body');
+      if(b) b.innerHTML = `<div class="empty-box" style="padding:20px 0;">불러오지 못했어요.</div>`;
     }
+  }
+
+  function renderHistoryChips(){
+    // 최근 30일 필터
+    const cutoff = new Date(); cutoff.setDate(cutoff.getDate()-30);
+    const recent = historyRecords.filter(r => {
+      const d = new Date(r['날짜']);
+      return !isNaN(d) && d >= cutoff;
+    });
+    const names = [...new Set(recent.map(r => r['루틴명']))];
+
+    let body = `<h3>완료 기록 (최근 30일)</h3>`;
+    if(names.length === 0){
+      body += `<div class="empty-box" style="padding:20px 0;">최근 30일간 완료한 루틴이 없어요.</div>`;
+    }else{
+      body += `<p style="color:var(--text-dim); font-size:13px; margin:-6px 0 14px;">루틴을 눌러 완료한 날을 확인하세요.</p>`;
+      body += `<div class="chip-row">` +
+        names.map(n => `<button class="routine-chip" onclick="showRoutineHistory('${jsArg(n)}')">${escapeHtml(n)}</button>`).join('') +
+        `</div>`;
+    }
+    body += `<button class="sheet-btn secondary" onclick="closeSheet()">닫기</button>`;
+    document.getElementById('sheetContent').innerHTML = body;
+  }
+
+  function showRoutineHistory(name){
+    // 이 루틴을 완료한 날짜 집합
+    const doneDates = new Set(historyRecords.filter(r => r['루틴명'] === name).map(r => r['날짜']));
+    const now = new Date();
+    const vy = now.getFullYear(), vm = now.getMonth();
+
+    const grid = buildHistoryGrid(name, vy, vm, doneDates);
+    document.getElementById('sheetContent').innerHTML = `
+      <button class="sheet-back" onclick="renderHistoryChips()">‹ 목록으로</button>
+      <h3>${escapeHtml(name)}</h3>
+      <div id="histGridArea">${grid}</div>
+      <button class="sheet-btn secondary" onclick="closeSheet()">닫기</button>
+    `;
+  }
+
+  function buildHistoryGrid(name, vy, vm, doneDates){
+    const label = `${vy}년 ${vm+1}월`;
+    const startWeekday = new Date(vy, vm, 1).getDay();
+    const daysInMonth = new Date(vy, vm+1, 0).getDate();
+    let cells = '';
+    for(let i=0;i<startWeekday;i++) cells += `<div class="cal-cell empty"></div>`;
+    for(let day=1; day<=daysInMonth; day++){
+      const key = `${vy}-${String(vm+1).padStart(2,'0')}-${String(day).padStart(2,'0')}`;
+      const wd = new Date(vy, vm, day).getDay();
+      let cls = 'cal-cell';
+      if(wd===0) cls += ' sun'; if(wd===6) cls += ' sat';
+      const dot = doneDates.has(key) ? '<div class="dot"></div>' : '';
+      cells += `<div class="${cls}">${day}${dot}</div>`;
+    }
+    return `
+      <div class="cal-header" style="margin-top:4px;">
+        <button class="cal-nav-btn" onclick="moveHistGrid('${jsArg(name)}',${vy},${vm},-1)">‹</button>
+        <div class="cal-month-label">${label}</div>
+        <button class="cal-nav-btn" onclick="moveHistGrid('${jsArg(name)}',${vy},${vm},1)">›</button>
+      </div>
+      <div class="cal-weekdays">
+        <div class="cal-wd sun">일</div><div class="cal-wd">월</div><div class="cal-wd">화</div>
+        <div class="cal-wd">수</div><div class="cal-wd">목</div><div class="cal-wd">금</div><div class="cal-wd sat">토</div>
+      </div>
+      <div class="cal-grid">${cells}</div>`;
+  }
+
+  function moveHistGrid(name, vy, vm, delta){
+    vm += delta;
+    if(vm < 0){ vm = 11; vy--; }
+    if(vm > 11){ vm = 0; vy++; }
+    const doneDates = new Set(historyRecords.filter(r => r['루틴명'] === name).map(r => r['날짜']));
+    document.getElementById('histGridArea').innerHTML = buildHistoryGrid(name, vy, vm, doneDates);
   }
 
   /* ================== 초기 로딩 ================== */
