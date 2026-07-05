@@ -451,7 +451,8 @@
   let touchStartX = 0, touchStartY = 0, touchActive = false;
   document.body.addEventListener('touchstart', (e)=>{
     if(sheetOpen) return;
-    if(e.target.closest('.weather-card')) return; // 날씨카드 자체 스와이프는 별도 처리
+    if(e.target.closest('.weather-card')) return;
+    if(e.target.closest('#calGridWrap')) return;
     touchStartX = e.touches[0].clientX;
     touchStartY = e.touches[0].clientY;
     touchActive = true;
@@ -461,10 +462,29 @@
     touchActive = false;
     const dx = e.changedTouches[0].clientX - touchStartX;
     const dy = e.changedTouches[0].clientY - touchStartY;
-    if(Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return; // 가로 스와이프만
+    if(Math.abs(dx) < 60 || Math.abs(dy) > Math.abs(dx)) return;
     const idx = TAB_ORDER.indexOf(currentTab);
     if(dx < 0 && idx < TAB_ORDER.length-1) switchTab(TAB_ORDER[idx+1]);
     if(dx > 0 && idx > 0) switchTab(TAB_ORDER[idx-1]);
+  }, {passive:true});
+
+  // 달력 스와이프 (이전달/다음달)
+  let calSwipeStartX = 0, calSwipeStartY = 0, calSwipeActive = false;
+  const calWrap = document.getElementById('calGridWrap');
+  calWrap.addEventListener('touchstart', (e)=>{
+    if(sheetOpen) return;
+    calSwipeStartX = e.touches[0].clientX;
+    calSwipeStartY = e.touches[0].clientY;
+    calSwipeActive = true;
+  }, {passive:true});
+  calWrap.addEventListener('touchend', (e)=>{
+    if(!calSwipeActive || sheetOpen) return;
+    calSwipeActive = false;
+    const dx = e.changedTouches[0].clientX - calSwipeStartX;
+    const dy = e.changedTouches[0].clientY - calSwipeStartY;
+    if(Math.abs(dx) < 50 || Math.abs(dy) > Math.abs(dx)) return;
+    if(dx < 0) changeMonth(1);
+    if(dx > 0) changeMonth(-1);
   }, {passive:true});
 
   /* ================== 날씨 (3일 스와이프) ================== */
